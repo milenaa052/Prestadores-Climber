@@ -77,7 +77,7 @@ export const createProvider = async (req: Request, res: Response) => {
     }
 }
 
-export const updatePrrovider = async (req: Request<{ id: string }>, res: Response) => {
+export const updateProvider = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const loggedInProvider = req.body.provider.idProvider
         const idProviderUpdate = Number(req.params.id)
