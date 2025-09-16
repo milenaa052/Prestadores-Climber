@@ -78,11 +78,11 @@ ProviderModel.init({
     },
     photUrl: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     biography: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     status: {
         type: DataTypes.STRING,
@@ -90,11 +90,11 @@ ProviderModel.init({
     },
     linkedin: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     instagram: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     validatedEmail: {
         type: DataTypes.BOOLEAN,
