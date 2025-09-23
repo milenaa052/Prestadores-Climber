@@ -3,7 +3,7 @@ import { getProviders, getProviderById, createProvider, updateProvider, deletePr
  
 const router = express.Router()
 
-router.post("/api/provider-registration", createProvider)
+router.post("/provider-registration", createProvider)
 
 router.get("/api/providers", getProviders)
 router.get("/api/provider/:id", getProviderById)
