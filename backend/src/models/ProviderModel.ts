@@ -4,7 +4,7 @@ import sequelize from "../config/database.js"
 
 class ProviderModel extends Model {
     idProvider: number | undefined
-    AddressId: string | undefined
+    addressId: string | undefined
     name: string | undefined
     cnpj: string | undefined
     phone: string | undefined
@@ -52,7 +52,7 @@ ProviderModel.init({
         autoIncrement: true,
         primaryKey: true
     },
-    AddressId: {
+    addressId: {
         type: DataTypes.STRING,
         allowNull: false
     },

@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { cnpj } from "cpf-cnpj-validator"
+//import { cnpj } from "cpf-cnpj-validator"
 import ProviderModel from "../models/ProviderModel.js"
 
 export const getProviders = async (req: Request, res: Response) => {
@@ -15,6 +15,7 @@ export const getProviderById = async (req: Request<{id: string}>, res: Response)
 export const createProvider = async (req: Request, res: Response) => {
     try {
         const { 
+            addressId,
             name, 
             cnpj, 
             phone,
@@ -35,10 +36,10 @@ export const createProvider = async (req: Request, res: Response) => {
                 .json({error: "All fields are required"})
         }
 
-        if (!cnpj.isValid(cnpj)) {
+        /*if (!cnpj.isValid(cnpj)) {
             return res.status(400)
                 .json({error: "invalid or non-existent CNPJ"})
-        }
+        }*/
 
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if (!emailRegex.test(email)) {
@@ -55,6 +56,7 @@ export const createProvider = async (req: Request, res: Response) => {
         }
 
         const provider = await ProviderModel.create({ 
+            addressId,
             name, 
             cnpj, 
             phone,
@@ -87,6 +89,7 @@ export const updateProvider = async (req: Request<{ id: string }>, res: Response
         }
 
         const { 
+            addressId,
             name, 
             cnpj, 
             phone,
@@ -124,6 +127,7 @@ export const updateProvider = async (req: Request<{ id: string }>, res: Response
                 .json({error: "invalid or non-existent CNPJ"})
         }
 
+        provider.addressId = addressId
         provider.name = name
         provider.cnpj = cnpj
         provider.phone = phone
