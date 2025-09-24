@@ -38,3 +38,5 @@ OpeningHoursModel.init({
     modelName: "OpeningHoursModel",
     tableName: "openingHours"
 })
+
+export default OpeningHoursModel
