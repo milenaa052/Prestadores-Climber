@@ -27,11 +27,11 @@ ServiceProviderModel.init({
         allowNull: false
     },
     minimumValue: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false
     },
     maximumValue: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false
     },
     status: {

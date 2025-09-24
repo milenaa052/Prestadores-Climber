@@ -17,8 +17,7 @@ export const createServiceProvider = async (req: Request, res: Response) => {
             providerId,
             serviceId,
             minimumValue,
-            maximumValue,
-            status
+            maximumValue
         } = req.body
 
         if (!providerId || !serviceId || !minimumValue || !maximumValue || !status ) {
