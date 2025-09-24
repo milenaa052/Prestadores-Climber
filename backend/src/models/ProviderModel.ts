@@ -2,19 +2,18 @@ import { DataTypes, Model } from "sequelize"
 import bcrypt from 'bcrypt'
 import sequelize from "../config/database.js"
 
-class ProviderModel extends Model {
-    idProvider: number | undefined
+export type Status = 'ACTIVE' | 'INACTIVE'
+
+class Contractor extends Model {
+    idContractor: number | undefined
     addressId: string | undefined
     name: string | undefined
-    cnpj: string | undefined
+    cpf: string | undefined
     phone: string | undefined
     email: string | undefined
     password: string | undefined
     photUrl: string | undefined
-    biography: string | undefined
-    status: string | undefined
-    linkedin: string | undefined
-    instagram: string | undefined
+    status: Status | undefined
     validatedEmail: boolean | undefined
     emailValidationToken: string | undefined
     savedLogin: boolean | undefined
@@ -46,8 +45,8 @@ class ProviderModel extends Model {
     }
 }
 
-ProviderModel.init({
-    idProvider: {
+Contractor.init({
+    idContractor: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -60,7 +59,7 @@ ProviderModel.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    cnpj: {
+    cpf: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -80,21 +79,10 @@ ProviderModel.init({
         type: DataTypes.STRING,
         allowNull: true
     },
-    biography: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
     status: {
         type: DataTypes.STRING,
-        allowNull: false
-    },
-    linkedin: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    instagram: {
-        type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false,
+        defaultValue: 'ACTIVE'
     },
     validatedEmail: {
         type: DataTypes.BOOLEAN,
@@ -111,8 +99,8 @@ ProviderModel.init({
 },
 {
     sequelize,
-    modelName: "ProviderModel",
-    tableName: "providers"
+    modelName: "Contractor",
+    tableName: "contractors"
 })
 
-export default ProviderModel
+export default Contractor
