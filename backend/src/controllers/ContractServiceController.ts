@@ -20,11 +20,10 @@ export const createContract = async (req: Request, res: Response) => {
             dateService,
             startTime,
             endTime,
-            status,
             value
         } = req.body
 
-        if (!providerId || !customerId || !providerServiceId || !dateService || !startTime || !endTime || !status || !value) {
+        if (!providerId || !customerId || !providerServiceId || !dateService || !startTime || !endTime || !value) {
             return res.status(400)
                 .json({ error: "All fields are required" })
         }

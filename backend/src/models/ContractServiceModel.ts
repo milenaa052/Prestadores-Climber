@@ -36,7 +36,7 @@ ContractServiceModel.init({
         allowNull: false
     },
     dateService: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false
     },
     startTime: {
@@ -53,7 +53,7 @@ ContractServiceModel.init({
         defaultValue: "PENDING"
     },
     value: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.FLOAT,
         allowNull: false
     }
 },
