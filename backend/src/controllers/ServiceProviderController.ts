@@ -20,7 +20,7 @@ export const createServiceProvider = async (req: Request, res: Response) => {
             maximumValue
         } = req.body
 
-        if (!providerId || !serviceId || !minimumValue || !maximumValue || !status ) {
+        if (!providerId || !serviceId || !minimumValue || !maximumValue ) {
             return res.status(400)
                 .json({ error: "All fields are required" })
         }
