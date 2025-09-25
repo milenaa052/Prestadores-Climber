@@ -3,11 +3,11 @@ import sequelize from "../config/database.js"
 
 class ReviewModel extends Model {
     idReview: number | undefined
-    contratoid: string | undefined
-    ServiceProviderReviewid: number | null | undefined
+    ContractId: string | undefined
+    ServiceProviderReviewId: number | null | undefined
     ScoreProvider: number | undefined
     DepoimentProvider: string | null| undefined
-    ClientReviewid: number | null | undefined
+    ClientReviewId: number | null | undefined
     ScoreClient: number | undefined
     DepoimentClient: string | null| undefined
     Status: 'ACTIVE'| 'INACTIVE' | undefined 
@@ -19,7 +19,7 @@ ReviewModel.init({
         autoIncrement: true,
         primaryKey: true
     },
-    ContratoId: {
+    ContractId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
