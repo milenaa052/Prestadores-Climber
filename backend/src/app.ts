@@ -8,7 +8,6 @@ import AdminRoutes from "./routes/AdminRoutes.js"
 import ReviewRoutes from "./routes/ReviewRoutes.js"
 import GalleryRoutes from "./routes/GalleryRoutes.js"
 import ServiceRoutes from "./routes/ServiceRoutes.js"
-import ReviewRoutes from "./routes/ReviewRoutes.js"
 
 const app = express()
 app.use(express.json())
