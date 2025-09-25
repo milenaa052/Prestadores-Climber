@@ -6,7 +6,7 @@ export const getAdmin = async (req: Request, res: Response) => {
     return res.status(200).send(admin)
 }
 
-export const getAdminsById = async (req: Request<{ id: string }>, res: Response) => {
+export const getAdminById = async (req: Request<{ id: string }>, res: Response) => {
     const admin = await AdminModel.findByPk(req.params.id)
     return res.status(200).json(admin)
 }
