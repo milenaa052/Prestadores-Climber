@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import AddressModel from "../models/AddressModel.js"
 
 export const getAddress = async (req: Request, res: Response) => {
+    
     const address = await AddressModel.findAll()
     return res.status(200).send(address)
 }
