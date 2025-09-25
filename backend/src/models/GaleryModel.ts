@@ -32,3 +32,5 @@ GaleryModel.init({
     modelName: "GalleryModel",
     tableName: "gallery"
 })
+
+export default GaleryModel
