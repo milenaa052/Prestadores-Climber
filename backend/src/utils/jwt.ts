@@ -3,11 +3,10 @@ import dotenv from 'dotenv'
 import AdminModel from "../models/AdminModel.js"
 
 dotenv.config()
-
 const JWT_SECRET = process.env.JWT_SECRETS
 const JWT_EXPIRES_IN = "7d"
 
-export const generateToken = (Admin)=> {
+export const generateTokenAdmin = (Admin)=> {
     const payload = {
         idAdmin: Admin.idAdmin,
         name: Admin.name,
