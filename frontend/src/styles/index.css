@@ -1013,6 +1013,10 @@
     color: var(--destructive);
   }
 
+  .border-destructive {
+    border-color: var(--destructive);
+  }
+
   .text-foreground {
     color: var(--foreground);
   }
@@ -1795,7 +1799,7 @@
   --muted-foreground: #6c757d;
   --accent: #e9ecef;
   --accent-foreground: #030213;
-  --destructive: #dc3545;
+  --destructive: #ff0019;
   --destructive-foreground: #fff;
   --border: #00000020;
   --input: transparent;
