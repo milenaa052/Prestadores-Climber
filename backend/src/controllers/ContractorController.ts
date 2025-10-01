@@ -52,10 +52,10 @@ export const createContractor = async (req: Request, res: Response) => {
             name, 
             cpf, 
             phone,
-            email, 
+            email,
             password,
             photUrl,
-            status,
+            status:"ACTIVE",
             validatedEmail,
             emailValidationToken,
             savedLogin
@@ -80,7 +80,7 @@ export const updateContractor = async (req: Request<{ id: string }>, res: Respon
         const { 
             addressId,
             name, 
-            cpf, 
+            cpfContractor, 
             phone,
             email, 
             currentPassword, 
@@ -92,7 +92,7 @@ export const updateContractor = async (req: Request<{ id: string }>, res: Respon
             savedLogin
         } = req.body
 
-        if(!name || !cpf) {
+        if(!name || !cpfContractor) {
             return res.status(400)
                 .json({error: "All fields are required"})
         }
@@ -108,14 +108,14 @@ export const updateContractor = async (req: Request<{ id: string }>, res: Respon
             return res.status(400).json({ message: "Changing the email is not allowed." })
         }
 
-        if (!cpf.isValid(cpf)) {
+        if (!cpf.isValid(cpfContractor)) {
             return res.status(400)
                 .json({error: "invalid or non-existent CPF"})
         }
 
         contractors.addressId = addressId
         contractors.name = name
-        contractors.cpf = cpf
+        contractors.cpf = cpfContractor
         contractors.phone = phone
         contractors.photUrl = photUrl
         contractors.status = status

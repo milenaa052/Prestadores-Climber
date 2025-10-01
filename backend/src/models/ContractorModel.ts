@@ -6,7 +6,7 @@ export type Status = 'ACTIVE' | 'INACTIVE'
 
 class Contractor extends Model {
     idContractor: number | undefined
-    addressId: string | undefined
+    addressId: number | undefined
     name: string | undefined
     cpf: string | undefined
     phone: string | undefined
@@ -52,7 +52,7 @@ Contractor.init({
         primaryKey: true
     },
     addressId: {
-        type: DataTypes.STRING,
+        type: DataTypes.NUMBER,
         allowNull: false
     },
     name: {
