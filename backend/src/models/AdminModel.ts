@@ -12,6 +12,7 @@ class AdminModel extends Model {
     email: string | undefined
     password: string | undefined
     status: Status | undefined
+    type: any;
 
     public async hashPassword() {
         this.password = await bcrypt.hash(this.password!, 10)
