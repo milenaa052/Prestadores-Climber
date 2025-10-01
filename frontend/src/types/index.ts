@@ -3,30 +3,8 @@ export interface User {
   name: string;
   email: string;
   type: 'provider' | 'client' | 'admin';
-  phone?: string;
-  avatar?: string;
-  isActive: boolean;
-  isOnline?: boolean;
+  active: boolean;
   createdAt: string;
-}
-
-export interface Provider extends User {
-  type: 'provider';
-  services: string[];
-  gallery: string[];
-  availability: Availability[];
-  rating: number;
-  totalReviews: number;
-  description?: string;
-  yearsOfExperience?: number;
-}
-
-export interface Client extends User {
-  type: 'client';
-}
-
-export interface Admin extends User {
-  type: 'admin';
 }
 
 export interface Service {
@@ -34,20 +12,27 @@ export interface Service {
   name: string;
   description: string;
   category: string;
-  icon?: string;
-  isActive: boolean;
-  createdAt: string;
+  active: boolean;
 }
 
-export interface Availability {
-  id: string;
-  dayOfWeek: number; // 0-6 (Sunday-Saturday)
-  startTime: string;
-  endTime: string;
-  isAvailable: boolean;
+export interface Provider extends User {
+  type: 'provider';
+  services: string[];
+  availability: {
+    [day: string]: { start: string; end: string; available: boolean };
+  };
+  rating: number;
+  reviewCount: number;
+  gallery: string[];
+  description: string;
+  online: boolean;
 }
 
-export interface Review {
+export interface Client extends User {
+  type: 'client';
+}
+
+export interface Rating {
   id: string;
   providerId: string;
   clientId: string;
@@ -56,49 +41,16 @@ export interface Review {
   clientRating?: number;
   providerComment?: string;
   clientComment?: string;
-  isVisible: boolean;
   createdAt: string;
-  updatedAt: string;
+  visible: boolean;
 }
 
-export interface Booking {
+export interface ServiceRequest {
   id: string;
-  providerId: string;
   clientId: string;
+  providerId: string;
   serviceId: string;
-  date: string;
-  time: string;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  notes?: string;
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled';
+  scheduledDate: string;
   createdAt: string;
-}
-
-export interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string, userType: 'provider' | 'client' | 'admin') => Promise<boolean>;
-  register: (userData: RegisterData) => Promise<boolean>;
-  logout: () => void;
-  isLoading: boolean;
-}
-
-export interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-  type: 'provider' | 'client';
-  phone?: string;
-  services?: string[];
-}
-
-export interface AppContextType {
-  services: Service[];
-  providers: Provider[];
-  reviews: Review[];
-  bookings: Booking[];
-  updateProvider: (providerId: string, data: Partial<Provider>) => void;
-  updateService: (serviceId: string, data: Partial<Service>) => void;
-  addReview: (review: Omit<Review, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateReview: (reviewId: string, data: Partial<Review>) => void;
-  getProvidersByService: (serviceId: string) => Provider[];
-  getVisibleReviews: (providerId: string) => Review[];
 }
