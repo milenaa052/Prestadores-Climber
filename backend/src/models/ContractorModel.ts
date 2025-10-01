@@ -4,7 +4,7 @@ import sequelize from "../config/database.js"
 
 export type Status = 'ACTIVE' | 'INACTIVE'
 
-class Contractor extends Model {
+class ContractorModel extends Model {
     idContractor: number | undefined
     addressId: number | undefined
     name: string | undefined
@@ -45,7 +45,7 @@ class Contractor extends Model {
     }
 }
 
-Contractor.init({
+ContractorModel.init({
     idContractor: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -103,4 +103,4 @@ Contractor.init({
     tableName: "contractors"
 })
 
-export default Contractor
+export default ContractorModel
