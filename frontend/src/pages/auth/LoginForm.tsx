@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -6,11 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { useAuth } from '../../contexts/AuthContext';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 
-interface LoginFormProps {
-  onNavigate: (view: string) => void;
-}
-
-export function LoginForm({ onNavigate }: LoginFormProps) {
+export function LoginForm() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,7 +23,7 @@ export function LoginForm({ onNavigate }: LoginFormProps) {
     const success = await login(email, password);
     
     if (success) {
-      onNavigate('dashboard');
+      navigate("/dashboard");
     } else {
       setError('Email ou senha inválidos');
     }
@@ -84,7 +82,7 @@ export function LoginForm({ onNavigate }: LoginFormProps) {
             <p className="text-sm text-gray-600">
               Não tem uma conta?{' '}
               <button
-                onClick={() => onNavigate('register')}
+                onClick={() => navigate("/register")}
                 className="text-blue-600 hover:text-black cursor-pointer"
               >
                 Cadastre-se

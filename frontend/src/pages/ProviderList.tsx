@@ -1,3 +1,4 @@
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -5,15 +6,14 @@ import { Star, Clock, CheckCircle } from 'lucide-react';
 import { Provider } from '../types';
 import { mockProviders, mockServices } from '../data/mockData';
 
-interface ProviderListProps {
-  serviceId: string;
-  onBack: () => void;
-}
+export function ProviderList() {
+  const { serviceId } = useParams<{ serviceId: string }>();
+  const navigate = useNavigate();
 
-export function ProviderList({ serviceId, onBack }: ProviderListProps) {
   const service = mockServices.find(s => s.id === serviceId);
+
   const availableProviders = mockProviders.filter(
-    provider => provider.services.includes(serviceId) && provider.active && provider.online
+    (provider) => provider.services.includes(serviceId || "") && provider.active && provider.online
   );
 
   const getDayName = (day: string) => {
@@ -39,7 +39,7 @@ export function ProviderList({ serviceId, onBack }: ProviderListProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
-        <Button variant="outline" onClick={onBack} className="mb-4 cursor-pointer">
+        <Button variant="outline"  onClick={() => navigate("/services")} className="mb-4 cursor-pointer">
           ← Voltar aos Serviços
         </Button>
 
@@ -59,7 +59,7 @@ export function ProviderList({ serviceId, onBack }: ProviderListProps) {
               Nenhum prestador online disponível para este serviço no momento.
             </p>
 
-            <Button onClick={onBack} className="mt-4 cursor-pointer">
+            <Button onClick={() => navigate("/services")} className="mt-4 cursor-pointer">
               Escolher Outro Serviço
             </Button>
           </CardContent>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -7,11 +8,8 @@ import { RadioGroup, RadioGroupItem } from '../../components/ui/radioGroup';
 import { useAuth } from '../../contexts/AuthContext';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 
-interface RegisterFormProps {
-  onNavigate: (view: string) => void;
-}
-
-export function RegisterForm({ onNavigate }: RegisterFormProps) {
+export function RegisterForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,7 +30,7 @@ export function RegisterForm({ onNavigate }: RegisterFormProps) {
     });
     
     if (success) {
-      onNavigate('dashboard');
+      navigate("/dashboard");
     } else {
       setError('Email já cadastrado');
     }
@@ -108,7 +106,7 @@ export function RegisterForm({ onNavigate }: RegisterFormProps) {
             <p className="text-sm text-gray-600">
               Já tem uma conta?{' '}
               <button
-                onClick={() => onNavigate('login')}
+                onClick={() => navigate("/login")}
                 className="text-blue-600 hover:text-black cursor-pointer"
               >
                 Faça login

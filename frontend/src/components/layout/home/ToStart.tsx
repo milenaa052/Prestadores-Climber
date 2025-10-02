@@ -1,12 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../../contexts/AuthContext';
 import { Button } from '../../ui/button';
 
-interface ToStartProps {
-  onNavigate: (view: string) => void;
-}
 
-export function ToStart({ onNavigate }: ToStartProps) {
+export function ToStart() {
     const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <>
@@ -28,7 +27,7 @@ export function ToStart({ onNavigate }: ToStartProps) {
                             <Button 
                                 size="lg" 
                                 variant="secondary"
-                                onClick={() => onNavigate('register')}
+                                onClick={() => navigate("/register")}
                                 className="text-lg px-8 py-3 hover:bg-white hover:text-blue-600 cursor-pointer"
                             >
                                 Cadastrar como Cliente
@@ -36,7 +35,7 @@ export function ToStart({ onNavigate }: ToStartProps) {
                             <Button 
                                 size="lg"
                                 variant="outline"
-                                onClick={() => onNavigate('register')}
+                                onClick={() => navigate("/register")}
                                 className="text-lg px-8 py-3 text-black border-white hover:bg-white hover:text-blue-600 cursor-pointer"
                             >
                                 Cadastrar como Prestador

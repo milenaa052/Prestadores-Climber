@@ -1,13 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { LogOut, Search } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useAuth } from "../../../contexts/AuthContext";
 
-interface ClientHeaderProps {
-    onNavigate: (view: string) => void;
-}
-
-export function ClientHeader({ onNavigate }: ClientHeaderProps) {
+export function ClientHeader() {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <div className="mb-8">
@@ -18,7 +16,7 @@ export function ClientHeader({ onNavigate }: ClientHeaderProps) {
                 </div>
 
                 <div className="flex row gap-4 items-center">
-                    <Button onClick={() => onNavigate('services')} className="cursor-pointer">
+                    <Button onClick={() => navigate("/services")} className="cursor-pointer">
                         <Search className="h-4 w-4" />
                         Buscar Serviços
                     </Button>
