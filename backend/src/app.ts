@@ -9,6 +9,7 @@ import ReviewRoutes from "./routes/ReviewRoutes.js"
 import GalleryRoutes from "./routes/GalleryRoutes.js"
 import ServiceRoutes from "./routes/ServiceRoutes.js"
 import CategoryRoutes from "./routes/CategoryRoutes.js"
+import LoginRoutes from "./routes/LoginRoutes.js"
 
 const app = express()
 app.use(express.json())
@@ -25,6 +26,7 @@ app.use('/api', OpeningHoursRoutes)
 app.use('/api', AdminRoutes)
 app.use('/api', GalleryRoutes)
 app.use('/api', CategoryRoutes)
+app.use('/api', LoginRoutes)
 
 app.get("/", (req, res) => {
     res.send("Hello World!")
