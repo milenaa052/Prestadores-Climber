@@ -16,7 +16,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
     try {
         const decoded = verifyToken(token);
-        res.locals.admin = decoded;
+        res.locals.user = decoded;
         next();
     } catch (error) {
         console.error("Token verification error:", error);

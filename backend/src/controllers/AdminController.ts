@@ -50,7 +50,7 @@ export const createAdmin = async (req: Request, res: Response) => {
 
 export const updateAdmin = async (req: Request<{ id: string }>, res: Response) => {
     try {
-        const loggedInAdmin = res.locals.admin.idAdmin;
+        const loggedInAdmin = res.locals.user.idAdmin;
         const idAdminUpdate = Number(req.params.id);
 
         if (Number(loggedInAdmin) !== idAdminUpdate) {
@@ -66,7 +66,7 @@ export const updateAdmin = async (req: Request<{ id: string }>, res: Response) =
             status
         } = req.body;
 
-        if (!name || !phone || !email) {
+        if (!name || !phone) {
             return res.status(400)
                 .json({ error: "All fields are required" })
         };

@@ -1,12 +1,13 @@
 import express from "express"
 import { getContractor, getContractorById, createContractor, updateContractor } from "../controllers/ContractorController.js"
- 
+import { authMiddleware } from "../middleware/authMiddleware.js"
+
 const router = express.Router()
 
-router.post("/provider-registration", createContractor)
+router.post("/contractor-registration", createContractor)
 
-router.get("/api/providers", getContractor)
-router.get("/api/provider/:id", getContractorById)
-router.put("/api/provider/:id", updateContractor)
+router.get("/contractors", authMiddleware, getContractor)
+router.get("/contractor/:id", authMiddleware, getContractorById)
+router.put("/contractor/:id", authMiddleware, updateContractor)
 
 export default router

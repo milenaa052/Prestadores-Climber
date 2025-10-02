@@ -2,28 +2,31 @@ import { DataTypes, Model } from "sequelize"
 import bcrypt from 'bcrypt'
 import sequelize from "../config/database.js"
 
-export type Status = 'ACTIVE' | 'INACTIVE'
+export type Status = 'ACTIVE' | 'INACTIVE';
 
 class ContractorModel extends Model {
-    idContractor: number | undefined
-    addressId: number | undefined
-    name: string | undefined
-    cpf: string | undefined
-    phone: string | undefined
-    email: string | undefined
-    password: string | undefined
-    photUrl: string | undefined
-    status: Status | undefined
-    validatedEmail: boolean | undefined
-    emailValidationToken: string | undefined
-    savedLogin: boolean | undefined
+    declare idContractor: number;
+    declare addressId: number;
+    declare name: string;
+    declare cpf: string;
+    declare phone: string;
+    declare email: string;
+    declare password: string;
+    declare photUrl: string;
+    declare status: Status;
+    declare validatedEmail: boolean;
+    declare emailValidationToken: string;
+    declare savedLogin: boolean;
 
     public async hashPassword() {
-        this.password = await bcrypt.hash(this.password!, 10)
+        if (this.password) {
+            this.password = await bcrypt.hash(this.password, 10)
+        };
     }
 
     public async validatePassword(password: string) : Promise<boolean> {
-        return await bcrypt.compare(password, this.password!)
+        if (!this.password) throw new Error("Password not set for this user");
+        return await bcrypt.compare(password, this.password);
     }
 
     public static validatePasswordLevel(password: string) {
@@ -52,7 +55,7 @@ ContractorModel.init({
         primaryKey: true
     },
     addressId: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     name: {
@@ -86,21 +89,32 @@ ContractorModel.init({
     },
     validatedEmail: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: true
     },
     emailValidationToken: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     savedLogin: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: true
     }
 },
 {
     sequelize,
     modelName: "Contractor",
-    tableName: "contractors"
+    tableName: "contractors",
+    hooks: {
+        beforeCreate: async (contractor: ContractorModel) => {
+            await contractor.hashPassword();
+        },
+
+        beforeUpdate: async (contractor: ContractorModel) => {
+            if (contractor.changed("password")) {
+                await contractor.hashPassword();
+            }
+        }
+    }
 })
 
 export default ContractorModel
