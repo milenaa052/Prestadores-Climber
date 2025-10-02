@@ -1,20 +1,18 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js"
 
-
-export type Status = 'PENDING' | 'IN PROGRESS' | 'COMPLETED';
-
+export type Status = 'PENDING' | 'IN PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 class ContractServiceModel extends Model {
-    idContract: number | undefined
-    providerId: number | undefined
-    customerId: number | undefined
-    providerServiceId: number | undefined
-    dateService: Date | undefined
-    startTime: string | undefined
-    endTime: string | undefined
-    status: Status | undefined
-    value: number | undefined
+    declare idContract: number;
+    declare providerId: number;
+    declare customerId: number;
+    declare providerServiceId: number;
+    declare dateService: Date;
+    declare startTime: string;
+    declare endTime: string;
+    declare status: Status;
+    declare value: number;
 }
 
 ContractServiceModel.init({
