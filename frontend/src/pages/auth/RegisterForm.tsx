@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { RadioGroup, RadioGroupItem } from '../../components/ui/radioGroup';
 import { useAuth } from '../../contexts/AuthContext';
 import { Alert, AlertDescription } from '../../components/ui/alert';
+import InputMask from 'react-input-mask';
+
 
 export function RegisterForm() {
   const navigate = useNavigate();
@@ -14,6 +16,10 @@ export function RegisterForm() {
     name: '',
     email: '',
     type: 'client' as 'provider' | 'client',
+    cpf: '',
+    cnpj: '',
+    phone: '',
+    password: '',
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -28,13 +34,13 @@ export function RegisterForm() {
       ...formData,
       active: true,
     });
-    
+
     if (success) {
       navigate("/dashboard");
     } else {
       setError('Email já cadastrado');
     }
-    
+
     setIsLoading(false);
   };
 
@@ -51,14 +57,14 @@ export function RegisterForm() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="name">Nome Completo</Label>
               <Input
                 id="name"
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
                 placeholder="Seu nome completo"
               />
@@ -70,9 +76,81 @@ export function RegisterForm() {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 placeholder="seu@email.com"
+              />
+            </div>
+
+            {formData.type === 'provider' && (
+              <div className="space-y-2">
+                <Label htmlFor="cnpj">CNPJ</Label>
+                <InputMask
+                  mask="99.999.999/9999-99"
+                  value={formData.cnpj}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, cnpj: e.target.value })}
+                >
+                  {(inputProps: any) => (
+                    <Input
+                      {...inputProps}
+                      id="cnpj"
+                      type="text"
+                      required
+                      placeholder="CNPJ"
+                    />
+                  )}
+                </InputMask>
+              </div>
+            )}
+
+            {formData.type === 'client' && (
+              <div className="space-y-2">
+                <Label htmlFor="cpf">CPF</Label>
+                <InputMask
+                  mask="999.999.999-99"
+                  value={formData.cpf}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, cpf: e.target.value })}
+                >
+                  {(inputProps: any) => (
+                    <Input
+                      {...inputProps}
+                      id="cpf"
+                      type="text"
+                      required
+                      placeholder="CPF"
+                    />
+                  )}
+                </InputMask>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Telefone</Label>
+              <InputMask
+                mask="(99) 99999-9999"
+                value={formData.phone}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
+              >
+                {(inputProps: any) => (
+                  <Input
+                    {...inputProps}
+                    id="phone"
+                    type="tel"
+                    required
+                    placeholder="(99) 99999-9999"
+                  />
+                )}
+              </InputMask>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
+                placeholder="Senha"
               />
             </div>
 
@@ -80,7 +158,7 @@ export function RegisterForm() {
               <Label>Tipo de conta</Label>
               <RadioGroup
                 value={formData.type}
-                onValueChange={(value) => setFormData({...formData, type: value as 'provider' | 'client'})}
+                onValueChange={(value) => setFormData({ ...formData, type: value as 'provider' | 'client' })}
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="client" id="client" />
@@ -93,8 +171,8 @@ export function RegisterForm() {
               </RadioGroup>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full cursor-pointer"
               disabled={isLoading}
             >
@@ -118,3 +196,4 @@ export function RegisterForm() {
     </div>
   );
 }
+
