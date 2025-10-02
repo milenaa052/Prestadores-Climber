@@ -1,15 +1,33 @@
-import { DataTypes, Model } from "sequelize"
+import { DataTypes, Model, Optional } from "sequelize"
 import sequelize from "../config/database.js"
 
-class AddressModel extends Model {
-    idAddress: number | undefined
-    cep: string | undefined
-    state: string | undefined
-    city: string | undefined
-    neighborhood: string | undefined
-    street: string | undefined
-    number: number | undefined
-    complement: string | undefined
+interface AddressAttributes {
+    idAddress: number
+    cep: string
+    state: string
+    city: string
+    neighborhood: string
+    street: string
+    number: number
+    complement?: string | null
+    createdAt?: Date;
+    updatedAt?: Date
+}
+
+interface AddressCreationAttributes extends Optional<AddressAttributes, "idAddress"> {}
+
+class AddressModel extends Model<AddressAttributes, AddressCreationAttributes>
+    implements AddressAttributes {
+    declare idAddress: number
+    declare cep: string
+    declare state: string
+    declare city: string
+    declare neighborhood: string
+    declare street: string
+    declare number: number
+    declare complement: string | null
+    declare readonly createdAt: Date
+    declare readonly updatedAt: Date
 }
 
 AddressModel.init({
@@ -39,13 +57,12 @@ AddressModel.init({
         allowNull: false
     },
     number: {
-        type: DataTypes.INTEGER
-        ,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     complement: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     }
 },
 {
