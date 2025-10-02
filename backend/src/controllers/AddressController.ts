@@ -38,7 +38,7 @@ export const createAddress = async (req: Request, res: Response) => {
             complement
         })
 
-        return res.status(201).json(address)
+        return res.status(201).json(address);
     } catch (error) {
         return res.status(500).json("Internal server error " + error)
     }
@@ -61,27 +61,24 @@ export const updateAddress = async (req: Request<{ id: string }>, res: Response)
                 .json({ error: "All fields are required" })
         }
 
-        const address = await AddressModel.findByPk(req.params.id)
-
+        const address = await AddressModel.findByPk(req.params.id);
         if(!address) {
             return res.status(404)
                 .json({error: "Address not found"})
         }
 
-        address.set({ 
-            cep, 
-            state, 
-            city, 
-            neighborhood, 
-            street, 
-            number, 
-            complement 
-        })
+        address.cep = cep;
+        address.state = state;
+        address.city = city;
+        address.neighborhood = neighborhood;
+        address.street = street;
+        address.number = number;
+        address.complement = complement;
 
-        await address.save()
-        await address.reload()
+        await address.save();
+        await address.reload();
 
-        return res.status(200).json(address)
+        return res.status(200).json(address);
 
     }catch(error){
         return res.status(500).json("Internal server error " + error)
