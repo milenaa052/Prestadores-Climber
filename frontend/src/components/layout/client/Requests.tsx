@@ -1,13 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
 import { Star } from "lucide-react";
 import { Badge } from "../../ui/badge";
 
-interface ClientRequestProps {
-  onNavigate: (view: string) => void;
-}
+export function Requests() {
+    const navigate = useNavigate();
 
-export function Requests({ onNavigate }: ClientRequestProps) {
     const serviceRequests = [
         {
             id: '1',
@@ -55,7 +54,7 @@ export function Requests({ onNavigate }: ClientRequestProps) {
                             Você ainda não solicitou nenhum serviço
                         </p>
 
-                        <Button onClick={() => onNavigate('services')} className="cursor-pointer">
+                        <Button onClick={() => navigate("services")} className="cursor-pointer">
                             Encontrar Serviços
                         </Button>
                     </div>

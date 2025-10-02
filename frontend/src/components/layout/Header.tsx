@@ -1,14 +1,12 @@
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from '../ui/button';
 import { useAuth } from '../../contexts/AuthContext';
 import { User } from 'lucide-react';
 
-interface HeaderProps {
-  onNavigate: (view: string) => void;
-  currentView: string;
-}
-
-export function Header({ onNavigate, currentView }: HeaderProps) {
+export function Header() {
   const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <header className="border-b border-gray-200 bg-white">
@@ -17,7 +15,7 @@ export function Header({ onNavigate, currentView }: HeaderProps) {
           <div className="flex items-center space-x-8">
             <h1 
               className="text-2xl font-bold text-gray-900 cursor-pointer"
-              onClick={() => onNavigate('home')}
+              onClick={() => navigate("/")}
             >
               Prestadores Climber
             </h1>
@@ -27,8 +25,8 @@ export function Header({ onNavigate, currentView }: HeaderProps) {
 
                 {user?.type === 'client' && (
                   <Button
-                    variant={currentView === 'services' ? 'default' : 'ghost'}
-                    onClick={() => onNavigate('services')}
+                    variant={location.pathname === "/services" ? "default" : "ghost"}
+                    onClick={() => navigate("/services")}
                     className="cursor-pointer"
                   >
                     Serviços
@@ -36,8 +34,8 @@ export function Header({ onNavigate, currentView }: HeaderProps) {
                 )}
                 
                 <Button
-                  variant={currentView === 'dashboard' ? 'default' : 'ghost'}
-                  onClick={() => onNavigate('dashboard')}
+                  variant={location.pathname === "/dashboard" ? "default" : "ghost"}
+                  onClick={() => navigate("/dashboard")}
                   className="cursor-pointer"
                 >
                   Dashboard
@@ -62,13 +60,13 @@ export function Header({ onNavigate, currentView }: HeaderProps) {
               <div className="flex space-x-2">
                 <Button
                   variant="ghost"
-                  onClick={() => onNavigate('login')}
+                  onClick={() => navigate("/login")}
                   className="cursor-pointer"
                 >
                   Entrar
                 </Button>
                 <Button
-                  onClick={() => onNavigate('register')}
+                  onClick={() => navigate("/register")}
                   className="cursor-pointer"
                 >
                   Cadastrar

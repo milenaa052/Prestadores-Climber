@@ -1,13 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../ui/button";
 import { CheckCircle, Search, ArrowRight } from "lucide-react";
 import { useAuth } from "../../../contexts/AuthContext";
 
-interface InitialScreenProps {
-  onNavigate: (view: string) => void;
-}
-
-export function InitialScreen({ onNavigate }: InitialScreenProps) {
+export function InitialScreen() {
     const { user, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <div className="bg-white border-b">
@@ -28,7 +26,7 @@ export function InitialScreen({ onNavigate }: InitialScreenProps) {
                             <>
                             <Button 
                                 size="lg" 
-                                onClick={() => onNavigate('register')}
+                                onClick={() => navigate("/register")}
                                 className="text-lg px-8 py-3 cursor-pointer"
                             >
                                 Começar Agora
@@ -38,7 +36,7 @@ export function InitialScreen({ onNavigate }: InitialScreenProps) {
                             <Button 
                                 variant="outline" 
                                 size="lg"
-                                onClick={() => onNavigate('login')}
+                                onClick={() => navigate("/login")}
                                 className="text-lg px-8 py-3 cursor-pointer hover:text-blue-600"
                             >
                                 Fazer Login
@@ -53,7 +51,7 @@ export function InitialScreen({ onNavigate }: InitialScreenProps) {
                                 {user?.type === 'client' && (
                                     <Button 
                                         size="lg" 
-                                        onClick={() => onNavigate('services')}
+                                        onClick={() => navigate("/services")}
                                         className="text-lg px-8 py-3"
                                     >
                                     <Search className="mr-2 h-5 w-5" />
@@ -63,7 +61,7 @@ export function InitialScreen({ onNavigate }: InitialScreenProps) {
                                     {user?.type === 'provider' && (
                                         <Button 
                                             size="lg" 
-                                            onClick={() => onNavigate('dashboard')}
+                                            onClick={() => navigate("/dashboard")}
                                             className="text-lg px-8 py-3"
                                         >
                                             Ir para Dashboard

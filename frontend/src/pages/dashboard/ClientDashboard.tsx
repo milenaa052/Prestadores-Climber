@@ -4,15 +4,11 @@ import { Requests } from '../../components/layout/client/Requests';
 import { Reviews } from '../../components/layout/client/Reviews';
 import { Favorites } from '../../components/layout/client/Favorites';
 
-interface ClientDashboardProps {
-  onNavigate: (view: string) => void;
-}
-
-export function ClientDashboard({ onNavigate }: ClientDashboardProps) {
+export function ClientDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
-      <ClientHeader onNavigate={onNavigate} />
+      <ClientHeader />
 
       <Tabs defaultValue="requests" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
@@ -22,7 +18,7 @@ export function ClientDashboard({ onNavigate }: ClientDashboardProps) {
         </TabsList>
 
         <TabsContent value="requests" className="space-y-6">
-          <Requests onNavigate={onNavigate} />
+          <Requests />
         </TabsContent>
 
         <TabsContent value="reviews" className="space-y-6">

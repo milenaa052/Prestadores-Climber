@@ -4,14 +4,10 @@ import { HowWorks } from '../../components/layout/home/HowWorks';
 import { StatsSection } from '../../components/layout/home/StatsSection';
 import { ToStart } from '../../components/layout/home/ToStart';
 
-interface HomePageProps {
-  onNavigate: (view: string) => void;
-}
-
-export function HomePage({ onNavigate }: HomePageProps) {
+export function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <InitialScreen onNavigate={onNavigate} />
+      <InitialScreen />
 
       <FeaturesSection />
       
@@ -19,7 +15,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
 
       <StatsSection />
      
-      <ToStart onNavigate={onNavigate} />
+      <ToStart />
     </div>
   );
 };

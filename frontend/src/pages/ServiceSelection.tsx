@@ -1,12 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { mockServices } from '../data/mockData';
 
-interface ServiceSelectionProps {
-  onServiceSelect: (serviceId: string) => void;
-}
-
-export function ServiceSelection({ onServiceSelect }: ServiceSelectionProps) {
+export function ServiceSelection() {
+  const navigate = useNavigate();
   const categories = Array.from(new Set(mockServices.filter(s => s.active).map(s => s.category)));
 
   return (
@@ -42,7 +40,7 @@ export function ServiceSelection({ onServiceSelect }: ServiceSelectionProps) {
                 <p className="text-gray-600 mb-4">{service.description}</p>
 
                 <Button 
-                  onClick={() => onServiceSelect(service.id)}
+                  onClick={() => navigate(`/providers/${service.id}`)}
                   className="w-full cursor-pointer"
                 >
                   Ver Prestadores
