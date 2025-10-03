@@ -5,9 +5,9 @@ const router = express.Router()
 
 router.post("/photo-registration", createPhoto)
 
-router.get("/api/gallery", getGallery)
-router.get("/api/gallery/:id", getPhotoById)
-router.put("/api/gallery/:id", updatePhoto)
-router.delete("/api/gallery/:id", deletePhotoById)
+router.get("/gallery", getGallery)
+router.get("/photo/:id", getPhotoById)
+router.put("/photo/:id", updatePhoto)
+router.delete("/photo/:id", deletePhotoById)
 
 export default router
