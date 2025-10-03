@@ -16,18 +16,33 @@ export function ServicesSection() {
         description: '',
         category: '',
     });
+    const [newCategory, setNewCategory] = useState('');
+    const [categories, setCategories] = useState<string[]>([]); 
 
     const handleAddService = () => {
         if (!newService.name || !newService.description || !newService.category) {
-            setAlertMessage('Preencha todos os campos para criar o serviço');
+            setAlertMessage('Prencha todos os campos para criar um serviço');
             setShowAlert(true);
             return;
         }
 
-        setAlertMessage('Serviço criado com sucesso!');
+        setAlertMessage('Serviço criado com sucesso"');
         setShowAlert(true);
         setNewService({ name: '', description: '', category: '' });
         
+        setTimeout(() => setShowAlert(false), 3000);
+    };
+
+    const handleAddCategory = () => {
+        if (!newCategory) {
+            setAlertMessage('Digite um nome para a categoria');
+            setShowAlert(true);
+            return;
+        }
+       setCategories([...categories, newCategory]);
+        setAlertMessage('Categoria adicionada com sucesso"');
+        setShowAlert(true);
+        setNewCategory('');
         setTimeout(() => setShowAlert(false), 3000);
     };
 
@@ -39,6 +54,38 @@ export function ServicesSection() {
 
     return (
         <>
+      <Card className="mb-6">
+            <CardHeader>
+                <CardTitle>Adicionar Categoria</CardTitle>
+                <CardDescription>
+                    Crie novas categorias para organizar seus serviços.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col md:flex-row items-center gap-4">
+                    <div className="flex-1">
+                        <Label htmlFor="category-name">Nome da categoria</Label>
+                        <Input
+                            id="category-name"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            placeholder="Nome da categoria"
+                        />
+                    </div>
+                    <Button onClick={handleAddCategory} className="mt-4 md:mt-0">
+                        Adicionar Categoria
+                    </Button>
+                </div>
+                {categories.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        {categories.map((cat, idx) => (
+                            <Badge key={idx} variant="secondary">{cat}</Badge>
+                        ))}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+
             <Card>
                 <CardHeader>
                     <CardTitle>Criar Novo Serviço</CardTitle>
