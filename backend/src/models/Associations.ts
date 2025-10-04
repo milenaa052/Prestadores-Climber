@@ -7,7 +7,7 @@ import ContractorModel from "./ContractorModel.js";
 import GaleryModel from "./GaleryModel.js";
 import OpeningHoursModel from "./OpeningHoursModel.js";
 import ProviderModel from "./ProviderModel.js";
-import ReviewModel from "./ReviweModel.js";
+import ReviewModel from "./ReviewModel.js";
 
 ServiceModel.belongsTo(CategoryModel, {
     foreignKey: "CategoryId",
