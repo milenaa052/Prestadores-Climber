@@ -1,13 +1,13 @@
 import express from "express"
-import { getProviders, getProviderById, createProvider, updateProvider, deleteProviderById } from "../controllers/ProviderController.js"
+import { getProviders, getProviderById, createProvider, updateProvider } from "../controllers/ProviderController.js"
+import { authMiddleware } from "../middleware/authMiddleware.js"
  
 const router = express.Router()
 
 router.post("/provider-registration", createProvider)
 
-router.get("/api/providers", getProviders)
-router.get("/api/provider/:id", getProviderById)
-router.put("/api/provider/:id", updateProvider)
-router.delete("/api/provider/:id", deleteProviderById)
+router.get("/providers", authMiddleware, getProviders)
+router.get("/provider/:id", authMiddleware, getProviderById)
+router.put("/provider/:id", authMiddleware, updateProvider)
 
 export default router

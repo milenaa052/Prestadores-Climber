@@ -96,7 +96,7 @@ export const updateContractor = async (req: Request<{ id: string }>, res: Respon
             savedLogin
         } = req.body;
 
-        if(!name || !cpfContractor || !phone) {
+        if(!name || !cpfContractor || !phone || !status) {
             return res.status(400)
                 .json({error: "All fields are required"})
         }

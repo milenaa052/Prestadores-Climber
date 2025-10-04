@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize"
 import bcrypt from 'bcrypt'
 import sequelize from "../config/database.js"
 
-export type Status = 1 | 0;
+export type Status = 'ACTIVE' | 'INACTIVE';
 
 class AdminModel extends Model {
     declare idAdmin: number;
@@ -67,7 +67,7 @@ AdminModel.init({
     status: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 1
+        defaultValue: "ACTIVE"
     }
 },
 {

@@ -1,15 +1,15 @@
 import { Request, Response } from "express"
-//import { cnpj } from "cpf-cnpj-validator"
+import { cnpj } from "cpf-cnpj-validator"
 import ProviderModel from "../models/ProviderModel.js"
 
 export const getProviders = async (req: Request, res: Response) => {
-    const providers = await ProviderModel.findAll()
-    return res.status(200).send(providers)
+    const providers = await ProviderModel.findAll();
+    return res.status(200).send(providers);
 }
 
 export const getProviderById = async (req: Request<{id: string}>, res: Response) => {
-    const provider = await ProviderModel.findByPk(req.params.id)
-    return res.status(200).json(provider)
+    const provider = await ProviderModel.findByPk(req.params.id);
+    return res.status(200).json(provider);
 }
 
 export const createProvider = async (req: Request, res: Response) => {
@@ -17,29 +17,28 @@ export const createProvider = async (req: Request, res: Response) => {
         const { 
             addressId,
             name, 
-            cnpj, 
+            cnpjProvider, 
             phone,
             email, 
             password,
             photUrl,
             biography,
-            status,
             linkedin,
             instagram,
             validatedEmail,
             emailValidationToken,
             savedLogin
-        } = req.body
+        } = req.body;
     
-        if(!name || !cnpj || !phone || !email || !password || !status) {
+        if(!name || !cnpjProvider || !phone || !email || !password) {
             return res.status(400)
                 .json({error: "All fields are required"})
         }
 
-        /*if (!cnpj.isValid(cnpj)) {
+        if (!cnpj.isValid(cnpjProvider)) {
             return res.status(400)
                 .json({error: "invalid or non-existent CNPJ"})
-        }*/
+        }
 
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if (!emailRegex.test(email)) {
@@ -58,21 +57,21 @@ export const createProvider = async (req: Request, res: Response) => {
         const provider = await ProviderModel.create({ 
             addressId,
             name, 
-            cnpj, 
+            cnpj: cnpjProvider, 
             phone,
             email, 
             password,
             photUrl,
             biography,
-            status,
+            status: "ACTIVE",
             linkedin,
             instagram,
             validatedEmail,
             emailValidationToken,
             savedLogin
-        })
+        });
 
-        return res.status(201).json(provider)
+        return res.status(201).json(provider);
 
     } catch (error) {
         return res.status(500).json("Internal server error " + error)
@@ -81,8 +80,8 @@ export const createProvider = async (req: Request, res: Response) => {
 
 export const updateProvider = async (req: Request<{ id: string }>, res: Response) => {
     try {
-        const loggedInProvider = req.body.provider.idProvider
-        const idProviderUpdate = Number(req.params.id)
+        const loggedInProvider = res.locals.user.idProvider;
+        const idProviderUpdate = Number(req.params.id);
 
         if (Number(loggedInProvider) !== idProviderUpdate) {
             return res.status(403).json({ error: "You do not have permission to edit this user" })
@@ -91,7 +90,7 @@ export const updateProvider = async (req: Request<{ id: string }>, res: Response
         const { 
             addressId,
             name, 
-            cnpj, 
+            cnpjProvider, 
             phone,
             email, 
             currentPassword, 
@@ -104,15 +103,14 @@ export const updateProvider = async (req: Request<{ id: string }>, res: Response
             validatedEmail,
             emailValidationToken,
             savedLogin
-        } = req.body
+        } = req.body;
 
-        if(!name || !cnpj) {
+        if(!name || !cnpjProvider || !phone || !status) {
             return res.status(400)
                 .json({error: "All fields are required"})
         }
 
-        const provider = await ProviderModel.findByPk(req.params.id)
-
+        const provider = await ProviderModel.findByPk(req.params.id);
         if(!provider) {
             return res.status(404)
                 .json({error: "Provider not found"})
@@ -122,23 +120,23 @@ export const updateProvider = async (req: Request<{ id: string }>, res: Response
             return res.status(400).json({ message: "Changing the email is not allowed." })
         }
 
-        if (!cnpj.isValid(cnpj)) {
+        if (!cnpj.isValid(cnpjProvider)) {
             return res.status(400)
                 .json({error: "invalid or non-existent CNPJ"})
         }
 
-        provider.addressId = addressId
-        provider.name = name
-        provider.cnpj = cnpj
-        provider.phone = phone
-        provider.photUrl = photUrl
-        provider.biography = biography
-        provider.status = status
-        provider.linkedin = linkedin
-        provider.instagram = instagram
-        provider.validatedEmail = validatedEmail
-        provider.emailValidationToken = emailValidationToken
-        provider.savedLogin = savedLogin
+        provider.addressId = addressId;
+        provider.name = name;
+        provider.cnpj = cnpjProvider;
+        provider.phone = phone;
+        provider.photUrl = photUrl;
+        provider.biography = biography;
+        provider.status = status;
+        provider.linkedin = linkedin;
+        provider.instagram = instagram;
+        provider.validatedEmail = validatedEmail;
+        provider.emailValidationToken = emailValidationToken;
+        provider.savedLogin = savedLogin;
 
         if (currentPassword && newPassword) {
             const correctPassword = await provider.validatePassword(currentPassword)
@@ -156,29 +154,12 @@ export const updateProvider = async (req: Request<{ id: string }>, res: Response
                 })
             }
 
-            provider.password = newPassword
+            provider.password = newPassword;
         }
 
-        await provider.save()
+        await provider.save();
 
-        return res.status(200).json(provider)
-
-    } catch (error) {
-        return res.status(500).json("Internal server error " + error)
-    }
-}
-
-export const deleteProviderById = async (req: Request<{ id: string}>, res: Response) => {  
-    try {
-        const provider = await ProviderModel.findByPk(req.params.id)
-        
-        if(!provider) {
-            return res.status(404)
-                .json({error: "Provider not found"})
-        }
-
-        await provider.destroy()
-        return res.status(204).send()
+        return res.status(200).json(provider);
 
     } catch (error) {
         return res.status(500).json("Internal server error " + error)

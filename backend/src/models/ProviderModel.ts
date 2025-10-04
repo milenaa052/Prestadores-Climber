@@ -2,29 +2,34 @@ import { DataTypes, Model } from "sequelize"
 import bcrypt from 'bcrypt'
 import sequelize from "../config/database.js"
 
+export type Status = 'ACTIVE' | 'INACTIVE';
+
 class ProviderModel extends Model {
-    idProvider: number | undefined
-    addressId: string | undefined
-    name: string | undefined
-    cnpj: string | undefined
-    phone: string | undefined
-    email: string | undefined
-    password: string | undefined
-    photUrl: string | undefined
-    biography: string | undefined
-    status: string | undefined
-    linkedin: string | undefined
-    instagram: string | undefined
-    validatedEmail: boolean | undefined
-    emailValidationToken: string | undefined
-    savedLogin: boolean | undefined
+    declare idProvider: number;
+    declare addressId: number;
+    declare name: string;
+    declare cnpj: string;
+    declare phone: string;
+    declare email: string;
+    declare password: string;
+    declare photUrl: string;
+    declare biography: string;
+    declare status: Status;
+    declare linkedin: string;
+    declare instagram: string;
+    declare validatedEmail: boolean;
+    declare emailValidationToken: string;
+    declare savedLogin: boolean;
 
     public async hashPassword() {
-        this.password = await bcrypt.hash(this.password!, 10)
+        if (this.password) {
+            this.password = await bcrypt.hash(this.password, 10)
+        };
     }
 
     public async validatePassword(password: string) : Promise<boolean> {
-        return await bcrypt.compare(password, this.password!)
+        if (!this.password) throw new Error("Password not set for this user");
+        return await bcrypt.compare(password, this.password);
     }
 
     public static validatePasswordLevel(password: string) {
@@ -53,7 +58,7 @@ ProviderModel.init({
         primaryKey: true
     },
     addressId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     name: {
@@ -98,21 +103,32 @@ ProviderModel.init({
     },
     validatedEmail: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: true
     },
     emailValidationToken: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     savedLogin: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: true
     }
 },
 {
     sequelize,
     modelName: "ProviderModel",
-    tableName: "providers"
+    tableName: "providers",
+    hooks: {
+        beforeCreate: async (provider: ProviderModel) => {
+            await provider.hashPassword();
+        },
+
+        beforeUpdate: async (provider: ProviderModel) => {
+            if (provider.changed("password")) {
+                await provider.hashPassword();
+            }
+        }
+    }
 })
 
 export default ProviderModel

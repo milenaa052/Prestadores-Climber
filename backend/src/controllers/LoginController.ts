@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import AdminModel from "../models/AdminModel.js";
-import ContractorModel from "../models/ContractorModel.js";
-import { generateTokenAdmin, generateTokenContractor } from "../utils/jwt.js";
+import { Request, Response } from "express"
+import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
+import AdminModel from "../models/AdminModel.js"
+import ContractorModel from "../models/ContractorModel.js"
+import ProviderModel from "../models/ProviderModel.js"
+import { generateTokenAdmin, generateTokenContractor, generateTokenProvider } from "../utils/jwt.js"
 
 dotenv.config();
 
@@ -63,6 +64,27 @@ export const loginUser = async (req: Request, res: Response) => {
                 name: userContractor.name,
                 email: userContractor.email,
                 role: "contractor",
+                token
+            };
+
+            return res.status(200).json({
+                mensagem: "Login successfully",
+                ...authenticated
+            });
+        }
+
+        const userProvider = await ProviderModel.findOne({ where: { email } });
+        if (userProvider) {
+            const valid = await userProvider.validatePassword(password);
+            if (!valid) return res.status(401).json({ error: "Invalid credentials" });
+
+            const token = generateTokenProvider(userProvider);
+
+            const authenticated: AuthenticatedUser = {
+                id: userProvider.idProvider,
+                name: userProvider.name,
+                email: userProvider.email,
+                role: "provider",
                 token
             };
 
