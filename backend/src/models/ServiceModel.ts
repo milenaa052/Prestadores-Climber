@@ -1,11 +1,13 @@
 import { DataTypes, Model } from "sequelize"
 import sequelize from "../config/database.js"
 
+export type Status = 'ACTIVE' | 'INACTIVE';
+
 class ServiceModel extends Model {
-    idService: number | undefined
-    CategoryId: number | undefined
-    Name: string | undefined
-    Status: 'ACTIVE'| 'INACTIVE' | undefined 
+    declare idService: number;
+    declare categoryId: number;
+    declare name: string;
+    declare status: Status;
 }
 
 ServiceModel.init({
@@ -14,15 +16,15 @@ ServiceModel.init({
         autoIncrement: true,
         primaryKey: true,
     },
-    CategoryId: {
+    categoryId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    Name: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    Status: {
+    status: {
         type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
         allowNull: false,
         defaultValue: 'ACTIVE',
