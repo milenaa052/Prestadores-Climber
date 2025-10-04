@@ -1,5 +1,6 @@
 import app from "./app.js"
 import sequelize from "./config/database.js"
+import "./models/Associations.js"
 
 const port = 3000
 

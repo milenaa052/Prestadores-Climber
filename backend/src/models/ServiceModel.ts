@@ -33,7 +33,7 @@ ServiceModel.init({
 {
     sequelize,
     modelName: "ServiceModel",
-    tableName: "Service"
+    tableName: "service"
 })
 
 export default ServiceModel

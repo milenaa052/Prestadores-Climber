@@ -58,7 +58,7 @@ ReviewModel.init({
 {
     sequelize,
     modelName: "ReviewModel",
-    tableName: "Review"
+    tableName: "review"
 })
 
 export default ReviewModel

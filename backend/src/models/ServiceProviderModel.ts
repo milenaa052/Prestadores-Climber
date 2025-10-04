@@ -43,7 +43,7 @@ ServiceProviderModel.init({
 {
     sequelize,
     modelName: "ServiceProviderModel",
-    tableName: "ServiceProviders"
+    tableName: "serviceProviders"
 })
 
 export default ServiceProviderModel
