@@ -12,7 +12,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock data para demonstração
 const mockUsers: User[] = [
   {
     id: '1',
@@ -45,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar se há usuário logado no localStorage
     const savedUser = localStorage.getItem('climber_user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
@@ -56,7 +54,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     
-    // Simulação de login
     const foundUser = mockUsers.find(u => u.email === email);
     if (foundUser && foundUser.active) {
       setUser(foundUser);
@@ -72,7 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (userData: Omit<User, 'id' | 'createdAt'>): Promise<boolean> => {
     setIsLoading(true);
     
-    // Simulação de registro
     const existingUser = mockUsers.find(u => u.email === userData.email);
     if (existingUser) {
       setIsLoading(false);
@@ -86,8 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     mockUsers.push(newUser);
-    setUser(newUser);
-    localStorage.setItem('climber_user', JSON.stringify(newUser));
+    //setUser(newUser);
+    //localStorage.setItem('climber_user', JSON.stringify(newUser));
     setIsLoading(false);
     return true;
   };
