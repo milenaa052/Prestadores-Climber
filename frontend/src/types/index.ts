@@ -59,3 +59,19 @@ export interface ServiceRequest {
   scheduledDate: string;
   createdAt: string;
 }
+
+export interface RegisterFormData {
+  name: string;
+  email: string;
+  type: 'provider' | 'client';
+  cpf: string;
+  cnpj: string;
+  phone: string;
+  password: string;
+  cep: string;
+  street: string;
+  number: string;
+  city: string;
+  uf: string;
+  complement: string;
+}
