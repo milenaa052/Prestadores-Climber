@@ -90,8 +90,15 @@ ProviderModel.init({
         allowNull: true
     },
     status: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
+        allowNull: false,
+        defaultValue: 'ACTIVE',
+        validate: {
+            isIn: {
+                args: [['ACTIVE', 'INACTIVE']],
+                msg: "Status must be either 'ACTIVE' or 'INACTIVE'",
+            }
+        }
     },
     linkedin: {
         type: DataTypes.STRING,

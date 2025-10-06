@@ -46,9 +46,15 @@ ContractServiceModel.init({
         allowNull: false
     },
     status: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('PENDING', 'IN PROGRESS', 'COMPLETED', 'CANCELLED'),
         allowNull: false,
-        defaultValue: "PENDING"
+        defaultValue: 'PENDING',
+        validate: {
+            isIn: {
+                args: [['PENDING', 'IN PROGRESS', 'COMPLETED', 'CANCELLED']],
+                msg: "Status must be either 'PENDING', 'IN PROGRESS', 'COMPLETED' or 'CANCELLED'",
+            }
+        }
     },
     value: {
         type: DataTypes.FLOAT,

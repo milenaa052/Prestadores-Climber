@@ -44,6 +44,10 @@ export const updateService = async (req: Request<{ id: string }>, res: Response)
                 .json({ error: "All fields are required" })
         }
 
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
+
         const service = await ServiceModel.findByPk(req.params.id);
         if (!service) {
             return res.status(404).json({ error: "Service not found" })

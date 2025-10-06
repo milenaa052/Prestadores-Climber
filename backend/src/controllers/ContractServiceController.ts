@@ -63,6 +63,10 @@ export const updateContract = async (req: Request<{ id: string }>, res: Response
                 .json({ error: "All fields are required" })
         }
 
+        if (status !== 'PENDING' && status !== 'IN PROGRESS' && status !== 'COMPLETED' && status !== 'CANCELLED') {
+            return res.status(400).json({ error: "Invalid status. Must be 'PENDING', 'IN PROGRESS', 'COMPLETED' or 'CANCELLED'." });
+        }
+
         const contract = await ContractServiceModel.findByPk(req.params.id);
 
         if (!contract) {

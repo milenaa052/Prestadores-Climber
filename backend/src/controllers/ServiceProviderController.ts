@@ -54,6 +54,10 @@ export const updateServiceProvider = async (req: Request<{ id: string }>, res: R
                 .json({ error: "All fields are required" })
         }
 
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
+
         const serviceProvider = await ServiceProviderModel.findByPk(req.params.id);
         if(!serviceProvider) {
             return res.status(404)

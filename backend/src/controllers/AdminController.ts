@@ -71,6 +71,10 @@ export const updateAdmin = async (req: Request<{ id: string }>, res: Response) =
                 .json({ error: "All fields are required" })
         };
 
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
+
         const admin = await AdminModel.findByPk(req.params.id);
 
         if (!admin) {

@@ -43,6 +43,10 @@ export const updateOpeningHour = async (req: Request, res: Response) => {
                 .json({ error: "All fields are required" })
         }
 
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
+
         const hours = await OpeningHoursModel.findByPk(req.params.id);
 
         if (!hours) {

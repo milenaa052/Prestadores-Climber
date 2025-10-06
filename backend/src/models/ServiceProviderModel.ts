@@ -37,7 +37,13 @@ ServiceProviderModel.init({
     status: {
         type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
         allowNull: false,
-        defaultValue: "ACTIVE"
+        defaultValue: 'ACTIVE',
+        validate: {
+            isIn: {
+                args: [['ACTIVE', 'INACTIVE']],
+                msg: "Status must be either 'ACTIVE' or 'INACTIVE'",
+            }
+        }
     }
 },
 {

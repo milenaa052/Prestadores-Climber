@@ -63,6 +63,10 @@ export const updateReview = async (req: Request<{ id: string }>, res: Response) 
                 .json({ error: "All fields are requerid for update" })
         }
 
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
+
         const review = await ReviewModel.findByPk(req.params.id);
 
         if (!review) {

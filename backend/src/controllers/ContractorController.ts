@@ -101,6 +101,10 @@ export const updateContractor = async (req: Request<{ id: string }>, res: Respon
                 .json({error: "All fields are required"})
         }
 
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
+
         const contractors = await ContractorModel.findByPk(req.params.id);
         if(!contractors) {
             return res.status(404)
