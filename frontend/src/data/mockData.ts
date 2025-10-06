@@ -1,4 +1,27 @@
-import { Service, Provider, Rating } from '../types';
+import { Categories, Service, Provider, Rating } from '../types';
+
+export const mockCategories: Categories[] = [
+  {
+    id: '1',
+    name: 'Limpeza'
+  },
+  {
+    id: '2',
+    name: 'Jardim'
+  },
+  {
+    id: '3',
+    name: 'Construção'
+  },
+  {
+    id: '4',
+    name: 'Elétrica'
+  },
+  {
+    id: '5',
+    name: 'Hidráulica'
+  }
+]
 
 export const mockServices: Service[] = [
   {

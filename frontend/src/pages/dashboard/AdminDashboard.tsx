@@ -4,9 +4,9 @@ import { Alert, AlertDescription } from '../../components/ui/alert';
 import { AdminHeader } from '../../components/layout/admin/AdminHeader';
 import { AdminStats } from '../../components/layout/admin/AdminStats';
 import { ProvidersSection } from '../../components/layout/admin/ProvidersSection';
+import { CategoriesSection } from '../../components/layout/admin/CategoriesSection';
 import { ServicesSection } from '../../components/layout/admin/ServicesSection';
 import { RatingsSection } from '../../components/layout/admin/RatingsSection';
-import { SettingsSection } from '../../components/layout/admin/SettingsSection';
 
 export function AdminDashboard() {
   const [showAlert, setShowAlert] = useState(false);
@@ -26,14 +26,18 @@ export function AdminDashboard() {
 
       <Tabs defaultValue="providers" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="providers">Prestadores</TabsTrigger>
-          <TabsTrigger value="services">Serviços</TabsTrigger>
-          <TabsTrigger value="ratings">Avaliações</TabsTrigger>
-          <TabsTrigger value="settings">Configurações</TabsTrigger>
+          <TabsTrigger value="providers" className="cursor-pointer">Prestadores</TabsTrigger>
+          <TabsTrigger value="categories" className="cursor-pointer">Categorias</TabsTrigger>
+          <TabsTrigger value="services" className="cursor-pointer">Serviços</TabsTrigger>
+          <TabsTrigger value="ratings" className="cursor-pointer">Avaliações</TabsTrigger>
         </TabsList>
 
         <TabsContent value="providers" className="space-y-6">
           <ProvidersSection setAlertMessage={setAlertMessage} setShowAlert={setShowAlert} />
+        </TabsContent>
+
+        <TabsContent value="categories" className="space-y-6">
+          <CategoriesSection />
         </TabsContent>
 
         <TabsContent value="services" className="space-y-6">
@@ -42,10 +46,6 @@ export function AdminDashboard() {
 
         <TabsContent value="ratings" className="space-y-6">
           <RatingsSection />
-        </TabsContent>
-
-        <TabsContent value="settings" className="space-y-6">
-          <SettingsSection />
         </TabsContent>
       </Tabs>
     </div>
