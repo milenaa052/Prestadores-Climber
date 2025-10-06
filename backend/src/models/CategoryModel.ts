@@ -2,8 +2,8 @@ import { DataTypes, Model } from "sequelize"
 import sequelize from "../config/database.js"
 
 class CategoryModel extends Model {
-    idCategory: number | undefined
-    Name: string | undefined
+    declare idCategory: number;
+    declare name: string;
 }
 
 CategoryModel.init({
@@ -12,7 +12,7 @@ CategoryModel.init({
         autoIncrement: true,
         primaryKey: true,
     },
-    Name: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
     }
@@ -20,7 +20,7 @@ CategoryModel.init({
 {
     sequelize,
     modelName: "CategoryModel",
-    tableName: "Category"
+    tableName: "category"
 })
 
 export default CategoryModel

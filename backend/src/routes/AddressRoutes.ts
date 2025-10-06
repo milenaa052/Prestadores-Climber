@@ -1,13 +1,12 @@
 import express from "express"
-import { createAdress, deleteAddressById, getAddress, getAddressById, updateAdress } from "../controllers/AddressController.js"
+import { createAddress, getAddress, getAddressById, updateAddress } from "../controllers/AddressController.js"
 
 const router = express.Router()
 
-router.post("/address-registration", createAdress)
+router.post("/address-registration", createAddress)
 
-router.get("/api/address", getAddress)
-router.get("/api/address/:id", getAddressById)
-router.put("/api/address/:id", updateAdress)
-router.delete("/api/address/:id", deleteAddressById)
+router.get("/address", getAddress)
+router.get("/address/:id", getAddressById)
+router.put("/address/:id", updateAddress)
 
 export default router

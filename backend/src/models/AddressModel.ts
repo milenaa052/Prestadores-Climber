@@ -2,14 +2,14 @@ import { DataTypes, Model } from "sequelize"
 import sequelize from "../config/database.js"
 
 class AddressModel extends Model {
-    idAddress: number | undefined
-    cep: string | undefined
-    state: string | undefined
-    city: string | undefined
-    neighborhood: string | undefined
-    street: string | undefined
-    number: number | undefined
-    complement: string | undefined
+    declare idAddress: number;
+    declare cep: string;
+    declare state: string;
+    declare city: string;
+    declare neighborhood: string;
+    declare street: string;
+    declare number: number
+    declare complement: string | null;
 }
 
 AddressModel.init({
@@ -39,13 +39,12 @@ AddressModel.init({
         allowNull: false
     },
     number: {
-        type: DataTypes.INTEGER
-        ,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     complement: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     }
 },
 {

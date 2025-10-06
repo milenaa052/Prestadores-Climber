@@ -3,11 +3,11 @@ import { createReview, deleteReview, getReviewById, getReviews, updateReview } f
 
 const router = express.Router()
 
-router.post("/Review-registration", createReview)
+router.post("/review-registration", createReview)
 
-router.get("/api/Review", getReviews)
-router.get("/api/Review/:id", getReviewById)
-router.put("/api/Review/:id", updateReview)
-router.delete("/api/Review/:id", deleteReview)
+router.get("/reviews", getReviews)
+router.get("/review/:id", getReviewById)
+router.put("/review/:id", updateReview)
+router.delete("/review/:id", deleteReview)
 
 export default router

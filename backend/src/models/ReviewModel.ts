@@ -1,16 +1,18 @@
 import { DataTypes, Model } from "sequelize"
 import sequelize from "../config/database.js"
 
+export type Status = 'ACTIVE' | 'INACTIVE';
+
 class ReviewModel extends Model {
-    idReview: number | undefined
-    ContractId: string | undefined
-    ServiceProviderReviewId: number | null | undefined
-    ScoreProvider: number | undefined
-    DepoimentProvider: string | null| undefined
-    ClientReviewId: number | null | undefined
-    ScoreClient: number | undefined
-    DepoimentClient: string | null| undefined
-    Status: 'ACTIVE'| 'INACTIVE' | undefined 
+    declare idReview: number;
+    declare contractId: string;
+    declare serviceProviderReviewId: number;
+    declare scoreProvider: number;
+    declare depoimentProvider: string;
+    declare clientReviewId: number;
+    declare scoreClient: number;
+    declare depoimentClient: string;
+    declare status: Status; 
 }
 
 ReviewModel.init({
@@ -19,44 +21,50 @@ ReviewModel.init({
         autoIncrement: true,
         primaryKey: true
     },
-    ContractId: {
+    contractId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    ServiceProviderReviewId: {
+    serviceProviderReviewId: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    DepoimentProvider: {
+    depoimentProvider: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    ScoreProvider: {
+    scoreProvider: {
         type: DataTypes.FLOAT,
         allowNull: true
     },
-    ClientReviewId: {
+    clientReviewId: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    ScoreClient: {
+    scoreClient: {
         type: DataTypes.FLOAT,
         allowNull: true
     },
-    DepoimentClient: {
+    depoimentClient: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    Status: {
+    status: {
         type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
         allowNull: false,
-        defaultValue: 'ACTIVE'
+        defaultValue: 'ACTIVE',
+        validate: {
+            isIn: {
+                args: [['ACTIVE', 'INACTIVE']],
+                msg: "Status must be either 'ACTIVE' or 'INACTIVE'",
+            }
+        }
     }  
 },
 {
     sequelize,
     modelName: "ReviewModel",
-    tableName: "Review"
+    tableName: "review"
 })
 
 export default ReviewModel

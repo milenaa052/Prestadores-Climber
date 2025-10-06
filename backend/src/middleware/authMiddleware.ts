@@ -1,5 +1,5 @@
-;import { NextFunction, Request, Response } from "express"
-import { verifyToken } from "../utils/jwt"
+import { NextFunction, Request, Response } from "express"
+import { verifyToken } from "../utils/jwt.js"
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -16,7 +16,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
     try {
         const decoded = verifyToken(token);
-        req.Admin = decoded;
+        res.locals.user = decoded;
         next();
     } catch (error) {
         console.error("Token verification error:", error);

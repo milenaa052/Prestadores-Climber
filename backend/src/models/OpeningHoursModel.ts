@@ -1,13 +1,15 @@
 import { DataTypes, Model } from "sequelize"
 import sequelize from "../config/database.js"
 
+export type Status = "ACTIVE" | "INACTIVE";
 
 class OpeningHoursModel extends Model {
-    idHours: number | undefined
-    providerId: number | undefined
-    weekDay: string | undefined
-    startTime: string | undefined
-    endTime: string | undefined
+    declare idHours: number;
+    declare providerId: number;
+    declare weekDay: string;
+    declare startTime: string;
+    declare endTime: string;
+    declare status: Status;
 }
 
 OpeningHoursModel.init({
@@ -31,6 +33,17 @@ OpeningHoursModel.init({
     endTime: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    status: {
+        type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
+        allowNull: false,
+        defaultValue: 'ACTIVE',
+        validate: {
+            isIn: {
+                args: [['ACTIVE', 'INACTIVE']],
+                msg: "Status must be either 'ACTIVE' or 'INACTIVE'",
+            }
+        }
     }
 },
 {

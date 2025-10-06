@@ -2,13 +2,13 @@ import { Request, Response } from "express"
 import ServiceProviderModel from "../models/ServiceProviderModel.js"
 
 export const getServiceProvider = async (req: Request, res: Response) => {
-    const serviceProvider = await ServiceProviderModel.findAll()
-    return res.status(200).send(serviceProvider)
+    const serviceProvider = await ServiceProviderModel.findAll();
+    return res.status(200).send(serviceProvider);
 }
 
 export const getServiceProviderById = async (req: Request<{ id: string }>, res: Response) => {
-    const serviceProvider = await ServiceProviderModel.findByPk(req.params.id)
-    return res.status(200).json(serviceProvider)
+    const serviceProvider = await ServiceProviderModel.findByPk(req.params.id);
+    return res.status(200).json(serviceProvider);
 }
 
 export const createServiceProvider = async (req: Request, res: Response) => {
@@ -18,7 +18,7 @@ export const createServiceProvider = async (req: Request, res: Response) => {
             serviceId,
             minimumValue,
             maximumValue
-        } = req.body
+        } = req.body;
 
         if (!providerId || !serviceId || !minimumValue || !maximumValue ) {
             return res.status(400)
@@ -30,10 +30,10 @@ export const createServiceProvider = async (req: Request, res: Response) => {
             serviceId,
             minimumValue,
             maximumValue,
-            status: 1
-        })
+            status: "ACTIVE"
+        });
 
-        return res.status(201).json(serviceProvider)
+        return res.status(201).json(serviceProvider);
     } catch (error) {
         return res.status(500).json("Internal server error " + error)
     }
@@ -54,22 +54,25 @@ export const updateServiceProvider = async (req: Request<{ id: string }>, res: R
                 .json({ error: "All fields are required" })
         }
 
-        const serviceProvider = await ServiceProviderModel.findByPk(req.params.id)
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
 
+        const serviceProvider = await ServiceProviderModel.findByPk(req.params.id);
         if(!serviceProvider) {
             return res.status(404)
                 .json({error: "Adress not found"})
         }
 
-        serviceProvider.providerId = providerId
-        serviceProvider.serviceId = serviceId
-        serviceProvider.minimumValue = minimumValue
-        serviceProvider.maximumValue = maximumValue
-        serviceProvider.status = status
+        serviceProvider.providerId = providerId;
+        serviceProvider.serviceId = serviceId;
+        serviceProvider.minimumValue = minimumValue;
+        serviceProvider.maximumValue = maximumValue;
+        serviceProvider.status = status;
 
-        await serviceProvider.save()
+        await serviceProvider.save();
 
-        return res.status(200).json(serviceProvider)
+        return res.status(200).json(serviceProvider);
 
     }catch(error){
         return res.status(500).json("Internal server error " + error)
@@ -78,15 +81,14 @@ export const updateServiceProvider = async (req: Request<{ id: string }>, res: R
 
 export const deleteServiceProviderById = async (req: Request<{ id: string}>, res: Response) => {  
     try {
-        const serviceProvider = await ServiceProviderModel.findByPk(req.params.id)
-        
+        const serviceProvider = await ServiceProviderModel.findByPk(req.params.id);
         if(!serviceProvider) {
             return res.status(404)
                 .json({error: "Address not found"})
         }
 
-        await serviceProvider.destroy()
-        return res.status(204).send()
+        await serviceProvider.destroy();
+        return res.status(204).send();
 
     } catch (error) {
         return res.status(500).json("Internal server error " + error)

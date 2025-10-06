@@ -2,10 +2,10 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js"
 
 class GaleryModel extends Model {
-    idGallery: number | undefined
-    providerId: number | undefined
-    urlPhoto: string | undefined
-    dateUpload: Date | undefined
+    declare idGallery: number;
+    declare providerId: number;
+    declare urlPhoto: string;
+    declare dateUpload: Date;
 }
 
 GaleryModel.init({

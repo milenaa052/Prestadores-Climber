@@ -1,15 +1,15 @@
 import { DataTypes, Model } from "sequelize"
 import sequelize from "../config/database.js"
 
-export type Status = 1 | 0;
+export type Status = 'ACTIVE' | 'INACTIVE';
 
 class ServiceProviderModel extends Model {
-    idServiceProvider: number | undefined
-    providerId: number | undefined
-    serviceId: number | undefined
-    minimumValue: number | undefined
-    maximumValue: number | undefined
-    status: Status | undefined
+    declare idServiceProvider: number;
+    declare providerId: number;
+    declare serviceId: number;
+    declare minimumValue: number;
+    declare maximumValue: number;
+    declare status: Status;
 }
 
 ServiceProviderModel.init({
@@ -35,15 +35,21 @@ ServiceProviderModel.init({
         allowNull: false
     },
     status: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
         allowNull: false,
-        defaultValue: 1
+        defaultValue: 'ACTIVE',
+        validate: {
+            isIn: {
+                args: [['ACTIVE', 'INACTIVE']],
+                msg: "Status must be either 'ACTIVE' or 'INACTIVE'",
+            }
+        }
     }
 },
 {
     sequelize,
     modelName: "ServiceProviderModel",
-    tableName: "ServiceProviders"
+    tableName: "serviceProviders"
 })
 
 export default ServiceProviderModel

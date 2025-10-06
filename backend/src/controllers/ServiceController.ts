@@ -2,36 +2,31 @@ import { Request, Response } from "express"
 import ServiceModel from "../models/ServiceModel.js"
 
 export const getService = async (req: Request, res: Response) => {
-    const services = await ServiceModel.findAll()
-    return res.status(200).json(services) 
+    const services = await ServiceModel.findAll();
+    return res.status(200).json(services);
 }  
 
 export const getServiceById = async (req: Request<{ id: string }>, res: Response) => {
-    const services = await ServiceModel.findByPk(req.params.id)
-    return res.status(200).json(services)
+    const services = await ServiceModel.findByPk(req.params.id);
+    return res.status(200).json(services);
 }
 
 export const createService = async (req: Request, res: Response) => {
     try {
-        const {
-            idService,
-            CategoryId,
-            Name,
-            Status
-        } = req.body
+        const { categoryId, name } = req.body;
 
-        if ( !idService ||!CategoryId || !Name) {
+        if ( !categoryId || !name) {
             return res.status(400)
                 .json({ error: "All fields are required" })
         }
 
         const service = await ServiceModel.create({
-            idService,
-            CategoryId,
-            Name,
-            Status: "ACTIVE"
-        })
-        return res.status(201).json(service)
+            categoryId,
+            name,
+            status: "ACTIVE"
+        });
+
+        return res.status(201).json(service);
     } catch (error) { 
         return res.status(500).json("Internal server error " + error) }
 }
@@ -39,43 +34,45 @@ export const createService = async (req: Request, res: Response) => {
 export const updateService = async (req: Request<{ id: string }>, res: Response) => {  
     try {
         const { 
-            idService,
-            CategoryId,
-            Name,
-            Status
-        } = req.body
+            categoryId,
+            name,
+            status
+        } = req.body;
 
-        if ( !idService ||!CategoryId || !Name || !Status) {
+        if (!categoryId || !name || !status) {
             return res.status(400)
                 .json({ error: "All fields are required" })
         }
 
-        const service = await ServiceModel.findByPk(req.params.id)
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
+
+        const service = await ServiceModel.findByPk(req.params.id);
         if (!service) {
             return res.status(404).json({ error: "Service not found" })
         }
 
-        service.idService = idService
-        service.CategoryId = CategoryId
-        service.Name = Name
-        service.Status = Status
+        service.categoryId = categoryId;
+        service.name = name;
+        service.status = status;
 
-        await service.save()
+        await service.save();
     
-        return res.status(200).json(service)
+        return res.status(200).json(service);
     } catch (error) { 
         return res.status(500).json("Internal server error " + error) }
 }
 
 export const deleteService = async (req: Request<{ id: string }>, res: Response) => {
     try {
-        const service = await ServiceModel.findByPk(req.params.id)
+        const service = await ServiceModel.findByPk(req.params.id);
         if (!service) {
             return res.status(404).json({ error: "Service not found" })
         } 
 
-        await service.destroy() 
-        return res.status(204).send()
+        await service.destroy();
+        return res.status(204).send();
     } catch (error) {
         return res.status(500).json("Internal server error " + error) }   
 }

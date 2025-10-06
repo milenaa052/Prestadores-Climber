@@ -3,13 +3,13 @@ import { cpf } from "cpf-cnpj-validator"
 import ContractorModel from "../models/ContractorModel.js"
 
 export const getContractor = async (req: Request, res: Response) => {
-    const contractors = await ContractorModel.findAll()
-    return res.status(200).send(contractors)
+    const contractors = await ContractorModel.findAll();
+    return res.status(200).send(contractors);
 }
 
 export const getContractorById = async (req: Request<{id: string}>, res: Response) => {
-    const contractors = await ContractorModel.findByPk(req.params.id)
-    return res.status(200).json(contractors)
+    const contractors = await ContractorModel.findByPk(req.params.id);
+    return res.status(200).json(contractors);
 }
 
 export const createContractor = async (req: Request, res: Response) => {
@@ -17,18 +17,17 @@ export const createContractor = async (req: Request, res: Response) => {
         const { 
             addressId,
             name, 
-            cpf, 
+            cpfContractor, 
             phone,
             email, 
             password,
             photUrl,
-            status,
             validatedEmail,
             emailValidationToken,
             savedLogin
-        } = req.body
+        } = req.body;
     
-        if(!name || !cpf || !phone || !email || !password || !status) {
+        if(!name || !cpfContractor || !phone || !email || !password) {
             return res.status(400)
                 .json({error: "All fields are required"})
         }
@@ -47,21 +46,26 @@ export const createContractor = async (req: Request, res: Response) => {
             })
         }
 
+        if (!cpf.isValid(cpfContractor)) {
+            return res.status(400)
+                .json({error: "invalid or non-existent CPF"})
+        }
+
         const contractors = await ContractorModel.create({ 
             addressId,
             name, 
-            cpf, 
+            cpf: cpfContractor, 
             phone,
             email,
             password,
             photUrl,
-            status:"ACTIVE",
+            status: "ACTIVE",
             validatedEmail,
             emailValidationToken,
             savedLogin
-        })
+        });
 
-        return res.status(201).json(contractors)
+        return res.status(201).json(contractors);
 
     } catch (error) {
         return res.status(500).json("Internal server error " + error)
@@ -70,7 +74,7 @@ export const createContractor = async (req: Request, res: Response) => {
 
 export const updateContractor = async (req: Request<{ id: string }>, res: Response) => {
     try {
-        const loggedInContractor = req.body.provider.idProvider
+        const loggedInContractor = res.locals.user.idContractor
         const idContractorUpdate = Number(req.params.id)
 
         if (Number(loggedInContractor) !== idContractorUpdate) {
@@ -90,15 +94,18 @@ export const updateContractor = async (req: Request<{ id: string }>, res: Respon
             validatedEmail,
             emailValidationToken,
             savedLogin
-        } = req.body
+        } = req.body;
 
-        if(!name || !cpfContractor) {
+        if(!name || !cpfContractor || !phone || !status) {
             return res.status(400)
                 .json({error: "All fields are required"})
         }
 
-        const contractors = await ContractorModel.findByPk(req.params.id)
+        if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+            return res.status(400).json({ error: "Invalid status. Must be 'ACTIVE' or 'INACTIVE'." });
+        }
 
+        const contractors = await ContractorModel.findByPk(req.params.id);
         if(!contractors) {
             return res.status(404)
                 .json({error: "Contractor not found"})
@@ -113,25 +120,23 @@ export const updateContractor = async (req: Request<{ id: string }>, res: Respon
                 .json({error: "invalid or non-existent CPF"})
         }
 
-        contractors.addressId = addressId
-        contractors.name = name
-        contractors.cpf = cpfContractor
-        contractors.phone = phone
-        contractors.photUrl = photUrl
-        contractors.status = status
-        contractors.validatedEmail = validatedEmail
-        contractors.emailValidationToken = emailValidationToken
-        contractors.savedLogin = savedLogin
+        contractors.addressId = addressId;
+        contractors.name = name;
+        contractors.cpf = cpfContractor;
+        contractors.phone = phone;
+        contractors.photUrl = photUrl;
+        contractors.status = status;
+        contractors.validatedEmail = validatedEmail;
+        contractors.emailValidationToken = emailValidationToken;
+        contractors.savedLogin = savedLogin;
 
         if (currentPassword && newPassword) {
-            const correctPassword = await contractors.validatePassword(currentPassword)
-
+            const correctPassword = await contractors.validatePassword(currentPassword);
             if (!correctPassword) {
                 return res.status(401).json({ error: "Incorrect current password" })
             }
 
-            const validatePasswordLevel = ContractorModel.validatePasswordLevel(newPassword)
-
+            const validatePasswordLevel = ContractorModel.validatePasswordLevel(newPassword);
             if (!validatePasswordLevel.validate) {
                 return res.status(400).json({ 
                     error: "Password too weak",
@@ -139,12 +144,12 @@ export const updateContractor = async (req: Request<{ id: string }>, res: Respon
                 })
             }
 
-            contractors.password = newPassword
+            contractors.password = newPassword;
         }
 
-        await contractors.save()
+        await contractors.save();
 
-        return res.status(200).json(contractors)
+        return res.status(200).json(contractors);
 
     } catch (error) {
         return res.status(500).json("Internal server error " + error)

@@ -1,139 +1,163 @@
-import CategoryModel from "./CategoryModel.js";
-import ServiceModel from "./ServiceModel.js";
-import ServiceProviderModel from "./ServiceProviderModel.js";
 import AddressModel from "./AddressModel.js";
-import ContractServiceModel from "./ContractServiceModel.js";
+import AdminModel from "./AdminModel.js";
+import CategoryModel from "./CategoryModel.js";
 import ContractorModel from "./ContractorModel.js";
+import ContractServiceModel from "./ContractServiceModel.js";
 import GaleryModel from "./GaleryModel.js";
 import OpeningHoursModel from "./OpeningHoursModel.js";
 import ProviderModel from "./ProviderModel.js";
-import ReviewModel from "./ReviweModel.js";
-
-ServiceModel.belongsTo(CategoryModel, {
-    foreignKey: "CategoryId",
-    as: "category"
-});
-
-CategoryModel.hasMany(ServiceModel, {
-    foreignKey: "CategoryId",
-    as: "services"
-});
-
-ServiceProviderModel.belongsTo(ProviderModel, {
-    foreignKey: "providerId",
-    as: "provider"
-});
-
-ProviderModel.hasMany(ServiceProviderModel, {
-    foreignKey: "providerId",
-    as: "serviceProviders"
-});
-
-ServiceProviderModel.belongsTo(ServiceModel, {
-    foreignKey: "serviceId",
-    as: "service"
-});
-
-ServiceModel.hasMany(ServiceProviderModel, {
-    foreignKey: "serviceId",
-    as: "serviceProviders"
-});
-
-ProviderModel.belongsTo(AddressModel, {
-    foreignKey: "addressId",
-    as: "address"
-});
+import ReviewModel from "./ReviewModel.js";
+import ServiceModel from "./ServiceModel.js";
+import ServiceProviderModel from "./ServiceProviderModel.js";
 
 AddressModel.hasMany(ProviderModel, {
-    foreignKey: "addressId",
-    as: "providers"
+  foreignKey: "addressId",
+  as: "providers"
 });
-
-OpeningHoursModel.belongsTo(ProviderModel, {
-    foreignKey: "providerId",
-    as: "provider"
-});
-
-ProviderModel.hasMany(OpeningHoursModel, {
-    foreignKey: "providerId",
-    as: "openingHours"
-});
-
-GaleryModel.belongsTo(ProviderModel, {
-    foreignKey: "providerId",
-    as: "provider"
-})
-
-ProviderModel.hasOne(GaleryModel, {
-    foreignKey: "providerId",
-    as: "galery"
-})
-
-ContractServiceModel.belongsTo(ProviderModel, {
-    foreignKey: "providerId",
-    as: "provider"
-});
-
-ProviderModel.hasMany(ContractServiceModel, {
-    foreignKey: "providerId",
-    as: "contracts"
-});
-
-ContractServiceModel.belongsTo(ServiceProviderModel, {
-    foreignKey: "providerServiceId",
-    as: "serviceProvider"
-});
-
-ServiceProviderModel.hasMany(ContractServiceModel, {
-    foreignKey: "providerServiceId",
-    as: "contracts"
-});
-
-ContractServiceModel.belongsTo(ContractorModel, {
-    foreignKey: "customerId",
-    as: "contractor"
-})
-
-ContractorModel.hasMany(ContractServiceModel, {
-    foreignKey: "customerId",
-    as: "contracts"
-})
-
-ContractorModel.belongsTo(AddressModel, {
-    foreignKey: "addressId",
-    as: "address"
+ProviderModel.belongsTo(AddressModel, {
+  foreignKey: "addressId",
+  as: "address"
 });
 
 AddressModel.hasMany(ContractorModel, {
-    foreignKey: "addressId",
-    as: "contractors"
+  foreignKey: "addressId",
+  as: "contractors"
+});
+ContractorModel.belongsTo(AddressModel, {
+  foreignKey: "addressId",
+  as: "address"
 });
 
+
+CategoryModel.hasMany(ServiceModel, {
+  foreignKey: "categoryId",
+  as: "services"
+});
+ServiceModel.belongsTo(CategoryModel, {
+  foreignKey: "categoryId",
+  as: "category"
+});
+
+
+ProviderModel.belongsToMany(ServiceModel, {
+  through: ServiceProviderModel,
+  foreignKey: "providerId",
+  otherKey: "serviceId",
+  as: "services"
+});
+ServiceModel.belongsToMany(ProviderModel, {
+  through: ServiceProviderModel,
+  foreignKey: "serviceId",
+  otherKey: "providerId",
+  as: "providers"
+});
+
+
+ProviderModel.hasMany(ServiceProviderModel, { 
+    foreignKey: "providerId", 
+    as: "serviceProviders" 
+});
+ServiceModel.hasMany(ServiceProviderModel, { 
+    foreignKey: "serviceId", 
+    as: "serviceProviders" 
+});
+
+ServiceProviderModel.belongsTo(ProviderModel, { 
+    foreignKey: "providerId", 
+    as: "provider" 
+});
+ServiceProviderModel.belongsTo(ServiceModel, {
+    foreignKey: "serviceId", 
+    as: "service" 
+});
+
+
+ProviderModel.hasMany(GaleryModel, {
+  foreignKey: "providerId",
+  as: "gallery"
+});
+GaleryModel.belongsTo(ProviderModel, {
+  foreignKey: "providerId",
+  as: "provider"
+});
+
+
+ProviderModel.hasMany(OpeningHoursModel, {
+  foreignKey: "providerId",
+  as: "openingHours"
+});
+OpeningHoursModel.belongsTo(ProviderModel, {
+  foreignKey: "providerId",
+  as: "provider"
+});
+
+
+ProviderModel.hasMany(ContractServiceModel, {
+  foreignKey: "providerId",
+  as: "contractsAsProvider"
+});
+ContractServiceModel.belongsTo(ProviderModel, {
+  foreignKey: "providerId",
+  as: "provider"
+});
+
+ContractorModel.hasMany(ContractServiceModel, {
+  foreignKey: "customerId",
+  as: "contractsAsCustomer"
+});
+ContractServiceModel.belongsTo(ContractorModel, {
+  foreignKey: "customerId",
+  as: "customer"
+});
+
+ServiceProviderModel.hasMany(ContractServiceModel, {
+  foreignKey: "providerServiceId",
+  as: "contracts"
+});
+ContractServiceModel.belongsTo(ServiceProviderModel, {
+  foreignKey: "providerServiceId",
+  as: "serviceProvider"
+});
+
+
+ContractServiceModel.hasOne(ReviewModel, {
+  foreignKey: "contractId",
+  as: "review"
+});
 ReviewModel.belongsTo(ContractServiceModel, {
-    foreignKey: "ContractId",
-    as: "contract"
-});
-ContractServiceModel.hasMany(ReviewModel, {
-    foreignKey: "ContractId",
-    as: "reviews"
+  foreignKey: "contractId",
+  as: "contract"
 });
 
-ReviewModel.belongsTo(ServiceProviderModel, {
-    foreignKey: "ServiceProviderReviewId",
-    as: "serviceProviderReview"
-});
 
-ServiceProviderModel.hasMany(ReviewModel, {
-    foreignKey: "ServiceProviderReviewId",
-    as: "serviceProviderReviews"
+ProviderModel.hasMany(ReviewModel, {
+  foreignKey: "serviceProviderReviewId",
+  as: "providerReviews"
 });
-
-ReviewModel.belongsTo(ContractorModel, {
-    foreignKey: "ClientReviewId",
-    as: "clientReview"
+ReviewModel.belongsTo(ProviderModel, {
+  foreignKey: "serviceProviderReviewId",
+  as: "providerReviewer"
 });
 
 ContractorModel.hasMany(ReviewModel, {
-    foreignKey: "ClientReviewId",
-    as: "clientReviews"
+  foreignKey: "clientReviewId",
+  as: "clientReviews"
 });
+ReviewModel.belongsTo(ContractorModel, {
+  foreignKey: "clientReviewId",
+  as: "clientReviewer"
+});
+
+export {
+  AddressModel,
+  AdminModel,
+  CategoryModel,
+  ContractorModel,
+  ContractServiceModel,
+  GaleryModel,
+  OpeningHoursModel,
+  ProviderModel,
+  ReviewModel,
+  ServiceModel,
+  ServiceProviderModel
+};

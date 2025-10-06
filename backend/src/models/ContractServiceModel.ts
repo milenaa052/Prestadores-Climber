@@ -1,20 +1,18 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js"
 
-
-export type Status = 'PENDING' | 'IN PROGRESS' | 'COMPLETED';
-
+export type Status = 'PENDING' | 'IN PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 class ContractServiceModel extends Model {
-    idContract: number | undefined
-    providerId: number | undefined
-    customerId: number | undefined
-    providerServiceId: number | undefined
-    dateService: Date | undefined
-    startTime: string | undefined
-    endTime: string | undefined
-    status: Status | undefined
-    value: number | undefined
+    declare idContract: number;
+    declare providerId: number;
+    declare customerId: number;
+    declare providerServiceId: number;
+    declare dateService: Date;
+    declare startTime: string;
+    declare endTime: string;
+    declare status: Status;
+    declare value: number;
 }
 
 ContractServiceModel.init({
@@ -48,9 +46,15 @@ ContractServiceModel.init({
         allowNull: false
     },
     status: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('PENDING', 'IN PROGRESS', 'COMPLETED', 'CANCELLED'),
         allowNull: false,
-        defaultValue: "PENDING"
+        defaultValue: 'PENDING',
+        validate: {
+            isIn: {
+                args: [['PENDING', 'IN PROGRESS', 'COMPLETED', 'CANCELLED']],
+                msg: "Status must be either 'PENDING', 'IN PROGRESS', 'COMPLETED' or 'CANCELLED'",
+            }
+        }
     },
     value: {
         type: DataTypes.FLOAT,
