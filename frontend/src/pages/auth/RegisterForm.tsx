@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Alert, AlertDescription } from '../../components/ui/alert';
-import { useAuth } from '../../contexts/AuthContext';
+//import { useAuth } from '../../contexts/AuthContext';
 import { AddressForm, AddressFormData } from './AddressForm';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -10,10 +10,11 @@ import { Label } from '../../components/ui/label';
 import { RadioGroup, RadioGroupItem } from '../../components/ui/radioGroup';
 import InputMask from 'react-input-mask';
 import { RegisterFormData } from '../../types';
+import axios from 'axios';
 
 export function RegisterForm() {
+  const API_URL = 'http://localhost:3000/api/provider-registration' ;
   const navigate = useNavigate();
-  const { register } = useAuth();
 
   const [formData, setFormData] = useState<RegisterFormData>({
     name: '',
@@ -62,21 +63,27 @@ export function RegisterForm() {
     setError('');
     setIsLoading(true);
 
-    if (!formData.cep || !formData.street || !formData.number || !formData.city || !formData.uf) {
+     if (!formData.cep || !formData.street || !formData.number || !formData.city || !formData.uf) {
       setError('Preencha todos os campos de endereço');
       setIsLoading(false);
       return;
     }
+     try {
+     
+        const response = await axios.post(API_URL, {
+            ...formData,
+            active: true 
+        });
 
-    const success = await register({ ...formData, active: true });
+        if (response.status === 201 || response.status === 200) {
+             navigate("/login");
+        }
+    } catch (apiError) {
+        setError('Ocorreu um erro no cadastro. Tente novamente.');
 
-    if (success) {
-      navigate("/login");
-    } else {
-      setError('Email já cadastrado');
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
