@@ -3,10 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
 import { Input } from "../../ui/input";
+import { Select } from "../../ui/select";
 import { Label } from "../../ui/label";
 import { Textarea } from "../../ui/textarea";
 import { Plus } from 'lucide-react';
-import { mockServices } from "../../../data/mockData";
+import { mockServices, mockCategories } from "../../../data/mockData";
 
 export function ServicesSection() {
     const [showAlert, setShowAlert] = useState(false);
@@ -16,8 +17,6 @@ export function ServicesSection() {
         description: '',
         category: '',
     });
-    const [newCategory, setNewCategory] = useState('');
-    const [categories, setCategories] = useState<string[]>([]); 
 
     const handleAddService = () => {
         if (!newService.name || !newService.description || !newService.category) {
@@ -33,20 +32,7 @@ export function ServicesSection() {
         setTimeout(() => setShowAlert(false), 3000);
     };
 
-    const handleAddCategory = () => {
-        if (!newCategory) {
-            setAlertMessage('Digite um nome para a categoria');
-            setShowAlert(true);
-            return;
-        }
-       setCategories([...categories, newCategory]);
-        setAlertMessage('Categoria adicionada com sucesso"');
-        setShowAlert(true);
-        setNewCategory('');
-        setTimeout(() => setShowAlert(false), 3000);
-    };
-
-      const toggleServiceStatus = (serviceId: string, active: boolean) => {
+    const toggleServiceStatus = (serviceId: string, active: boolean) => {
         setAlertMessage(`Serviço ${active ? 'ativado' : 'desativado'} com sucesso!`);
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
@@ -54,38 +40,6 @@ export function ServicesSection() {
 
     return (
         <>
-      <Card className="mb-6">
-            <CardHeader>
-                <CardTitle>Adicionar Categoria</CardTitle>
-                <CardDescription>
-                    Crie novas categorias para organizar seus serviços.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                    <div className="flex-1">
-                        <Label htmlFor="category-name">Nome da categoria</Label>
-                        <Input
-                            id="category-name"
-                            value={newCategory}
-                            onChange={(e) => setNewCategory(e.target.value)}
-                            placeholder="Nome da categoria"
-                        />
-                    </div>
-                    <Button onClick={handleAddCategory} className="mt-4 md:mt-0">
-                        Adicionar Categoria
-                    </Button>
-                </div>
-                {categories.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                        {categories.map((cat, idx) => (
-                            <Badge key={idx} variant="secondary">{cat}</Badge>
-                        ))}
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-
             <Card>
                 <CardHeader>
                     <CardTitle>Criar Novo Serviço</CardTitle>
@@ -106,14 +60,24 @@ export function ServicesSection() {
                                 placeholder="Nome do serviço"
                             />
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="service-category">Categoria</Label>
-                            <Input
+
+                            <Select
                                 id="service-category"
                                 value={newService.category}
-                                onChange={(e) => setNewService({...newService, category: e.target.value})}
-                                placeholder="Categoria do serviço"
-                            />
+                                onChange={(e) =>
+                                    setNewService({ ...newService, category: e.target.value })
+                                }
+                            >
+                                <option value="">Selecione uma categoria</option>
+                                {mockCategories.map((category) => (
+                                    <option key={category.id} value={category.name}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </Select>
                         </div>
                     </div>
 
@@ -128,7 +92,7 @@ export function ServicesSection() {
                     </div>
 
                     <Button onClick={handleAddService} className="cursor-pointer">
-                        <Plus className="h-4 w-4 mr-2" />
+                        <Plus className="h-4 w-4 mr-1" />
                         Criar Serviço
                     </Button>
                 </CardContent>
@@ -136,7 +100,7 @@ export function ServicesSection() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Gerenciar Serviços Existentes</CardTitle>7
+                    <CardTitle>Gerenciar Serviços Existentes</CardTitle>
 
                     <CardDescription>
                         Ative ou desative serviços na plataforma

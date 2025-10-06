@@ -7,6 +7,11 @@ export interface User {
   createdAt: string;
 }
 
+export interface Categories {
+  id: string;
+  name: string;
+}
+
 export interface Service {
   id: string;
   name: string;
