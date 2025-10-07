@@ -47,8 +47,32 @@ export function Header() {
             )}
 
             {isAuthenticated ? (
-              <Avatar onClick={() => navigate("/dashboard")} className="cursor-pointer">
-                <User className="w-5 h-5 text-gray-700" />
+              <Avatar
+                onClick={() => navigate("/dashboard")}
+                className="cursor-pointer"
+                style={{
+                  border: '2px solid #374151',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'black';
+                  e.currentTarget.style.borderColor = 'black';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '';
+                  e.currentTarget.style.borderColor = '#374151';
+                }}
+              >
+                <User 
+                  className="w-5 h-5" 
+                  style={{ transition: 'color 0.2s ease-in-out' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '';
+                  }}
+                />
               </Avatar>
             ) : (
               <div className="flex space-x-2">
