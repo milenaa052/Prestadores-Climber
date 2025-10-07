@@ -1,7 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from '../ui/button';
 import { useAuth } from '../../contexts/AuthContext';
-import { User } from 'lucide-react';
+import { Avatar } from "../ui/avatar";
+import { User } from "lucide-react";
 
 export function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -19,9 +20,11 @@ export function Header() {
             >
               Prestadores Climber
             </h1>
-            
+          </div>
+
+          <div className="flex items-center space-x-4">
             {isAuthenticated && (
-              <nav className="flex space-x-4">
+              <nav className="flex">
 
                 {user?.type === 'client' && (
                   <Button
@@ -42,20 +45,11 @@ export function Header() {
                 </Button>
               </nav>
             )}
-          </div>
 
-          <div className="flex items-center space-x-4">
             {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <User className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">{user?.name}</span>
-                  <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
-                    {user?.type === 'provider' ? 'Prestador' : 
-                     user?.type === 'client' ? 'Contratante' : 'Admin'}
-                  </span>
-                </div>
-              </div>
+              <Avatar onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                <User className="w-5 h-5 text-gray-700" />
+              </Avatar>
             ) : (
               <div className="flex space-x-2">
                 <Button
