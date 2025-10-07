@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
@@ -8,11 +8,16 @@ import { Label } from "../../ui/label";
 import { Textarea } from "../../ui/textarea";
 import { Plus } from 'lucide-react';
 import { mockServices, mockCategories } from "../../../data/mockData";
+import axios from "axios";
 
 interface ServicesSectionProps {
   setShowAlert: React.Dispatch<React.SetStateAction<boolean>>;
   setAlertMessage: React.Dispatch<React.SetStateAction<string>>;
   setAlertType: React.Dispatch<React.SetStateAction<'success' | 'error'>>;
+}
+interface Category {
+    idCategory: number;
+    name: string;
 }
 
 export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }: ServicesSectionProps) {
@@ -21,6 +26,22 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
         description: '',
         category: '',
     });
+
+    const [name, setName] = useState('');
+    const [category, setCategory] = useState<Category [] >([]);
+
+    const getCategoryByName = () => {
+         axios.get(`http://localhost:3000/api/categories`)
+        .then((response) => {
+            setCategory(response.data);
+        })
+        .catch((error) => {
+            console.error('Error fetching category:', error);
+        });
+    }
+    useEffect(() => {
+        getCategoryByName();
+    }, [name]);
 
     const handleAddService = () => {
         if (!newService.name || !newService.description || !newService.category) {
@@ -80,8 +101,8 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
                                 }
                             >
                                 <option value="">Selecione uma categoria</option>
-                                {mockCategories.map((category) => (
-                                    <option key={category.id} value={category.name}>
+                                {category.map((category) => (
+                                    <option key={category.idCategory} value={category.name}>
                                         {category.name}
                                     </option>
                                 ))}
