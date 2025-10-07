@@ -23,6 +23,9 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
     const [newCategory, setNewCategory] = useState('');
     const [categories, setCategories] = useState<Categories[]>([]);
     const [reload, setReload] = useState(false);
+    const [editCategory, setEditCategory] = useState<Categories | null>(null);
+    const [editNameCategory, setEditNameCategory] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     const handleAddCategory = async () => {
         if (!newCategory) {
@@ -64,6 +67,41 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                 setShowAlert(true);
                 setTimeout(() => setShowAlert(false), 3000);
             })
+    }
+
+    const openEditModal = (category: Categories) => {
+        setShowModal(true);
+        setEditCategory(category);
+        setEditNameCategory(category.name);
+    }
+
+    const handleEditCategory = async () => {
+        try {
+            if (!editCategory || !editNameCategory) {
+                setAlertMessage('Digite um nome para a categoria');
+                setAlertType('error');
+                setShowAlert(true);
+                setShowModal(true);
+                setTimeout(() => setShowAlert(false), 3000);
+                return;
+            }
+
+            const payload = { name: editNameCategory };
+            await axios.put(`http://localhost:3000/api/category/${editCategory?.idCategory}`, payload);
+
+            setAlertMessage('Categoria atualizada com sucesso!');
+            setAlertType('success');
+            setShowAlert(true);
+            setShowModal(false);
+            setEditCategory(null);
+            setReload(true);
+            setTimeout(() => setShowAlert(false), 3000);
+        } catch (error) {
+            setAlertMessage('Erro ao atualizar categoria');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+        }
     }
 
     useEffect(() => {
@@ -123,6 +161,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                                             variant="secondary"
                                             size="icon"
                                             className="hover:bg-blue-100 hover:text-blue-600 transition cursor-pointer"
+                                            onClick={() => openEditModal(category)}
                                         >
                                             <Pencil className="w-4 h-4" />
                                         </Button>
@@ -145,6 +184,41 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                     </div>
                 </CardContent>
             </Card>
+            {
+                showModal && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
+                        <div className="bg-white rounded-xl shadow-2xl p-6 w-[90%] max-w-md transform transition-all scale-100 animate-fadeIn">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-800">Editar Categoria</h3>
+
+                            <Label htmlFor="edit-category" className="text-gray-700">Nome da categoria</Label>
+                            <Input
+                                id="edit-category"
+                                value={editNameCategory}
+                                onChange={(e) => setEditNameCategory(e.target.value)}
+                                placeholder="Novo nome da categoria"
+                                className="mb-4 mt-1"
+                            />
+
+                            <div className="flex justify-end space-x-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        setEditCategory(null);
+                                    }}
+                                    className="px-4 cursor-pointer"
+                                >
+                                    Voltar
+                                </Button>
+
+                                <Button onClick={handleEditCategory} className="px-4 cursor-pointer">
+                                    Salvar
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </>
     );
 };
