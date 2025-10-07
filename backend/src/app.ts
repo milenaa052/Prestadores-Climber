@@ -1,4 +1,5 @@
 import express from "express"
+import cors from "cors"
 import ProviderRoutes from "./routes/ProviderRoutes.js"
 import AddressRoutes from "./routes/AddressRoutes.js"
 import ContractServiceRoutes from "./routes/ContractServiceRoutes.js"
@@ -14,6 +15,11 @@ import ContractorRoutes from "./routes/ContractorRoutes.js"
 
 const app = express()
 app.use(express.json())
+
+app.use(cors({
+  origin: ["http://localhost:5178"],
+  credentials: true
+}))
 
 app.use('/api', ProviderRoutes);
 app.use('/api', AddressRoutes);
