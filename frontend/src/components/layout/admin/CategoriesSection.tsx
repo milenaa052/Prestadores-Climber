@@ -25,7 +25,9 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
     const [reload, setReload] = useState(false);
     const [editCategory, setEditCategory] = useState<Categories | null>(null);
     const [editNameCategory, setEditNameCategory] = useState('');
-    const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [categoryDelete, setCategoryDelete] = useState<Categories | null>(null);
 
     const handleAddCategory = async () => {
         if (!newCategory) {
@@ -70,7 +72,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
     }
 
     const openEditModal = (category: Categories) => {
-        setShowModal(true);
+        setShowEditModal(true);
         setEditCategory(category);
         setEditNameCategory(category.name);
     }
@@ -81,7 +83,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                 setAlertMessage('Digite um nome para a categoria');
                 setAlertType('error');
                 setShowAlert(true);
-                setShowModal(true);
+                setShowEditModal(true);
                 setTimeout(() => setShowAlert(false), 3000);
                 return;
             }
@@ -92,12 +94,37 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
             setAlertMessage('Categoria atualizada com sucesso!');
             setAlertType('success');
             setShowAlert(true);
-            setShowModal(false);
+            setShowEditModal(false);
             setEditCategory(null);
             setReload(true);
             setTimeout(() => setShowAlert(false), 3000);
         } catch (error) {
             setAlertMessage('Erro ao atualizar categoria');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+        }
+    }
+
+    const openDeleteModal = (category: Categories) => {
+        setShowDeleteModal(true);
+        setCategoryDelete(category);
+    }
+
+    const handleDeleteCategory = async () => {
+        if (!categoryDelete) return
+        try {
+
+            await axios.delete(`http://localhost:3000/api/category/${categoryDelete.idCategory}`)
+
+            setAlertMessage('Categoria deletada com sucesso!');
+            setAlertType('success');
+            setShowAlert(true);
+            setShowDeleteModal(false);
+            setReload(true);
+            setTimeout(() => setShowAlert(false), 3000);
+        } catch (error) {
+            setAlertMessage('Erro ao deletar categoria');
             setAlertType('error');
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
@@ -170,6 +197,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                                             variant="destructive"
                                             size="icon"
                                             className="cursor-pointer"
+                                            onClick={() => openDeleteModal(category)}
                                         >
                                             <Trash className="w-4 h-4" />
                                         </Button>
@@ -185,7 +213,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                 </CardContent>
             </Card>
             {
-                showModal && (
+                showEditModal && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
                         <div className="bg-white rounded-xl shadow-2xl p-6 w-[90%] max-w-md transform transition-all scale-100 animate-fadeIn">
                             <h3 className="text-xl font-semibold mb-4 text-gray-800">Editar Categoria</h3>
@@ -203,7 +231,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                                 <Button
                                     variant="outline"
                                     onClick={() => {
-                                        setShowModal(false);
+                                        setShowEditModal(false);
                                         setEditCategory(null);
                                     }}
                                     className="px-4 cursor-pointer"
@@ -219,6 +247,27 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                     </div>
                 )
             }
+             {showDeleteModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
+                    <div className="bg-white rounded-xl shadow-2xl p-6 w-[90%] max-w-md transform transition-all scale-100 animate-fadeIn">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800">Tem certeza que deseja excluir?</h3>
+
+                        <div className="flex justify-end space-x-3">
+                            <Button
+                                variant="outline"
+                                onClick={() => { setShowDeleteModal(false) }}
+                                className="px-4 cursor-pointer"
+                            >
+                                Voltar
+                            </Button>
+
+                            <Button onClick={handleDeleteCategory} className="px-4 cursor-pointer">
+                                Excluir
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 };
