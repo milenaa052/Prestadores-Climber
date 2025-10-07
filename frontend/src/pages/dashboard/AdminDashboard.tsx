@@ -11,16 +11,11 @@ import { RatingsSection } from '../../components/layout/admin/RatingsSection';
 export function AdminDashboard() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
  
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <AdminHeader />
-
-      {showAlert && (
-        <Alert className="mb-6">
-          <AlertDescription>{alertMessage}</AlertDescription>
-        </Alert>
-      )}
 
       <AdminStats />
 
@@ -32,20 +27,51 @@ export function AdminDashboard() {
           <TabsTrigger value="ratings" className="cursor-pointer">Avaliações</TabsTrigger>
         </TabsList>
 
+        {showAlert && (
+          <Alert
+            variant={alertType === 'error' ? 'destructive' : 'success'}
+            className="mb-6"
+            style={{borderColor: alertType === 'error' ? 'rgb(252, 4, 4)' :  'rgba(2, 196, 18, 1)'}}
+          >
+            <div
+              className="col-start-2 grid justify-items-start gap-1 text-sm"
+              style={{ 
+                color: alertType === 'error' ? 'rgb(252 4 4)' : 'rgba(2, 196, 18, 1)'
+              }}
+            >
+              {alertMessage}
+            </div>
+          </Alert>
+        )}
+
+
+
         <TabsContent value="providers" className="space-y-6">
           <ProvidersSection setAlertMessage={setAlertMessage} setShowAlert={setShowAlert} />
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-6">
-          <CategoriesSection />
+          <CategoriesSection 
+            setAlertMessage={setAlertMessage} 
+            setShowAlert={setShowAlert} 
+            setAlertType={setAlertType} 
+          />
         </TabsContent>
 
         <TabsContent value="services" className="space-y-6">
-          <ServicesSection />
+          <ServicesSection 
+            setAlertMessage={setAlertMessage} 
+            setShowAlert={setShowAlert} 
+            setAlertType={setAlertType}
+          />
         </TabsContent>
 
         <TabsContent value="ratings" className="space-y-6">
-          <RatingsSection />
+          <RatingsSection
+            setAlertMessage={setAlertMessage} 
+            setShowAlert={setShowAlert} 
+            setAlertType={setAlertType}
+          />
         </TabsContent>
       </Tabs>
     </div>

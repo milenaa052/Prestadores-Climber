@@ -5,12 +5,17 @@ import { Badge } from "../../ui/badge";
 import { mockRatings, mockServices } from "../../../data/mockData";
 import { Star, Eye, EyeOff } from 'lucide-react';
 
-export function RatingsSection() {
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
+interface RatingsSectionProps {
+  setShowAlert: React.Dispatch<React.SetStateAction<boolean>>;
+  setAlertMessage: React.Dispatch<React.SetStateAction<string>>;
+  setAlertType: React.Dispatch<React.SetStateAction<'success' | 'error'>>;
+}
+
+export function RatingsSection({ setShowAlert, setAlertMessage, setAlertType }: RatingsSectionProps) {
 
     const toggleRatingVisibility = (ratingId: string, visible: boolean) => {
         setAlertMessage(`Avaliação ${visible ? 'ativada' : 'desativada'} com sucesso!`);
+        setAlertType('success');
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
     };

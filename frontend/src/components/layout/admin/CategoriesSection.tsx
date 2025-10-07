@@ -7,21 +7,28 @@ import { Plus } from 'lucide-react';
 import { mockCategories } from "../../../data/mockData";
 import { Pencil, Trash } from "lucide-react";
 
-export function CategoriesSection() {
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
+interface CategoriesSectionProps {
+  setShowAlert: React.Dispatch<React.SetStateAction<boolean>>;
+  setAlertMessage: React.Dispatch<React.SetStateAction<string>>;
+  setAlertType: React.Dispatch<React.SetStateAction<'success' | 'error'>>;
+}
+
+export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType }: CategoriesSectionProps) {
     const [newCategory, setNewCategory] = useState('');
     const [categories, setCategories] = useState<string[]>([]); 
 
     const handleAddCategory = () => {
         if (!newCategory) {
             setAlertMessage('Digite um nome para a categoria');
+            setAlertType('error');
             setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
             return;
         }
         
        setCategories([...categories, newCategory]);
-        setAlertMessage('Categoria adicionada com sucesso"');
+        setAlertMessage('Categoria adicionada com sucesso!');
+        setAlertType('success');
         setShowAlert(true);
         setNewCategory('');
         setTimeout(() => setShowAlert(false), 3000);
