@@ -9,9 +9,13 @@ import { Textarea } from "../../ui/textarea";
 import { Plus } from 'lucide-react';
 import { mockServices, mockCategories } from "../../../data/mockData";
 
-export function ServicesSection() {
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
+interface ServicesSectionProps {
+  setShowAlert: React.Dispatch<React.SetStateAction<boolean>>;
+  setAlertMessage: React.Dispatch<React.SetStateAction<string>>;
+  setAlertType: React.Dispatch<React.SetStateAction<'success' | 'error'>>;
+}
+
+export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }: ServicesSectionProps) {
     const [newService, setNewService] = useState({
         name: '',
         description: '',
@@ -21,11 +25,14 @@ export function ServicesSection() {
     const handleAddService = () => {
         if (!newService.name || !newService.description || !newService.category) {
             setAlertMessage('Prencha todos os campos para criar um serviço');
+            setAlertType('error');
             setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
             return;
         }
 
-        setAlertMessage('Serviço criado com sucesso"');
+        setAlertMessage('Serviço criado com sucesso!');
+        setAlertType('success');
         setShowAlert(true);
         setNewService({ name: '', description: '', category: '' });
         
@@ -34,6 +41,7 @@ export function ServicesSection() {
 
     const toggleServiceStatus = (serviceId: string, active: boolean) => {
         setAlertMessage(`Serviço ${active ? 'ativado' : 'desativado'} com sucesso!`);
+        setAlertType('success');
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
     };
