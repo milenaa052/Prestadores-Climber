@@ -25,8 +25,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
     const [reload, setReload] = useState(false);
     const [editCategory, setEditCategory] = useState<Categories | null>(null);
     const [editNameCategory, setEditNameCategory] = useState('');
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [openModal, setOpenModal] = useState<null | 'edit' | 'delete'>(null);
     const [categoryDelete, setCategoryDelete] = useState<Categories | null>(null);
 
     const handleAddCategory = async () => {
@@ -38,7 +37,6 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
             return;
         }
         try {
-
             const payload = { name: newCategory }
             await axios.post("http://localhost:3000/api/category-registration", payload)
 
@@ -46,7 +44,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
             setAlertType('success');
             setShowAlert(true);
             setNewCategory('');
-            setReload(true);
+            getCategories();
             setTimeout(() => setShowAlert(false), 3000);
 
         } catch (error) {
@@ -55,7 +53,6 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
         }
-
     };
 
     const getCategories = () => {
@@ -72,10 +69,10 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
     }
 
     const openEditModal = (category: Categories) => {
-        setShowEditModal(true);
         setEditCategory(category);
         setEditNameCategory(category.name);
-    }
+        setOpenModal('edit');
+    };
 
     const handleEditCategory = async () => {
         try {
@@ -83,7 +80,6 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                 setAlertMessage('Digite um nome para a categoria');
                 setAlertType('error');
                 setShowAlert(true);
-                setShowEditModal(true);
                 setTimeout(() => setShowAlert(false), 3000);
                 return;
             }
@@ -94,9 +90,9 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
             setAlertMessage('Categoria atualizada com sucesso!');
             setAlertType('success');
             setShowAlert(true);
-            setShowEditModal(false);
+            setOpenModal(null);
             setEditCategory(null);
-            setReload(true);
+            getCategories();
             setTimeout(() => setShowAlert(false), 3000);
         } catch (error) {
             setAlertMessage('Erro ao atualizar categoria');
@@ -104,32 +100,31 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
         }
-    }
+    };
 
     const openDeleteModal = (category: Categories) => {
-        setShowDeleteModal(true);
         setCategoryDelete(category);
-    }
+        setOpenModal('delete');
+    };
 
     const handleDeleteCategory = async () => {
-        if (!categoryDelete) return
-        try {
+    if (!categoryDelete) return
+    try {
+        await axios.delete(`http://localhost:3000/api/category/${categoryDelete.idCategory}`)
 
-            await axios.delete(`http://localhost:3000/api/category/${categoryDelete.idCategory}`)
-
-            setAlertMessage('Categoria deletada com sucesso!');
-            setAlertType('success');
-            setShowAlert(true);
-            setShowDeleteModal(false);
-            setReload(true);
-            setTimeout(() => setShowAlert(false), 3000);
-        } catch (error) {
-            setAlertMessage('Erro ao deletar categoria');
-            setAlertType('error');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
-        }
+        setAlertMessage('Categoria deletada com sucesso!');
+        setAlertType('success');
+        setShowAlert(true);
+        setOpenModal(null);
+        getCategories();
+        setTimeout(() => setShowAlert(false), 3000);
+    } catch (error) {
+        setAlertMessage('Erro ao deletar categoria');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
     }
+};
 
     useEffect(() => {
         getCategories();
@@ -213,57 +208,79 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                 </CardContent>
             </Card>
             {
-                showEditModal && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
-                        <div className="bg-white rounded-xl shadow-2xl p-6 w-[90%] max-w-md transform transition-all scale-100 animate-fadeIn">
-                            <h3 className="text-xl font-semibold mb-4 text-gray-800">Editar Categoria</h3>
+                openModal === 'edit' && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                        <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 w-[90%] max-w-md sm:max-w-lg animate-fadeIn">
+                            <div className="flex flex-col items-center">
+                                <div className="bg-blue-100 rounded-full p-3 mb-4">
+                                    <Pencil className="w-8 h-8 text-blue-600" />
+                                </div>
+                                <h3 className="mb-1 text-2xl font-extrabold tracking-tight text-gray-900">
+                                    Editar Categoria
+                                </h3>
+                                <p className="mb-6 text-sm text-gray-500">
+                                    Altere o nome e salve para atualizar.
+                                </p>
+                                <Label htmlFor="edit-category" className="text-gray-700 mb-1">Nome da categoria</Label>
+                                <Input
+                                    id="edit-category"
+                                    value={editNameCategory}
+                                    onChange={(e) => setEditNameCategory(e.target.value)}
+                                    placeholder="Novo nome da categoria"
+                                    className="mb-6 mt-2"
+                                />
+                                <div className="flex justify-center gap-8 w-full">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            setOpenModal(null);
+                                            setEditCategory(null);
+                                        }}
+                                        className="h-11 rounded-xl border-gray-300 bg-white px-6 font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 hover:text-gray-900 focus-visible:ring-2 focus-visible:ring-gray-400"
+                                    >
+                                        Voltar
+                                    </Button>
+                                    <Button
+                                        onClick={handleEditCategory}
+                                        className="h-11 rounded-xl px-6 font-medium bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow"
+                                    >
+                                        Salvar
+                                    </Button>
+                                </div>
 
-                            <Label htmlFor="edit-category" className="text-gray-700">Nome da categoria</Label>
-                            <Input
-                                id="edit-category"
-                                value={editNameCategory}
-                                onChange={(e) => setEditNameCategory(e.target.value)}
-                                placeholder="Novo nome da categoria"
-                                className="mb-4 mt-1"
-                            />
-
-                            <div className="flex justify-end space-x-3">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setShowEditModal(false);
-                                        setEditCategory(null);
-                                    }}
-                                    className="px-4 cursor-pointer"
-                                >
-                                    Voltar
-                                </Button>
-
-                                <Button onClick={handleEditCategory} className="px-4 cursor-pointer">
-                                    Salvar
-                                </Button>
                             </div>
                         </div>
                     </div>
                 )
             }
-             {showDeleteModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
-                    <div className="bg-white rounded-xl shadow-2xl p-6 w-[90%] max-w-md transform transition-all scale-100 animate-fadeIn">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800">Tem certeza que deseja excluir?</h3>
-
-                        <div className="flex justify-end space-x-3">
-                            <Button
-                                variant="outline"
-                                onClick={() => { setShowDeleteModal(false) }}
-                                className="px-4 cursor-pointer"
-                            >
-                                Voltar
-                            </Button>
-
-                            <Button onClick={handleDeleteCategory} className="px-4 cursor-pointer">
-                                Excluir
-                            </Button>
+            {openModal === 'delete' && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 w-[90%] max-w-md sm:max-w-lg animate-fadeIn scale-100 transition-transform duration-200">
+                        <div className="flex flex-col items-center">
+                            <div className="bg-red-100 rounded-full p-3 mb-4">
+                                <Trash className="w-8 h-8 text-red-600" />
+                            </div>
+                            <h3 className="text-2xl font-bold mb-2 text-gray-800 text-center">Excluir Categoria</h3>
+                            <p className="mb-6 text-center text-gray-600">
+                                Tem certeza que deseja excluir <span className="font-semibold text-red-600">{categoryDelete?.name}</span>?<br />
+                                Esta ação não poderá ser desfeita.
+                            </p>
+                            <div className="flex justify-center gap-6 w-full">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setOpenModal(null)}
+                                    className="px-6 py-2 rounded-lg border-gray-300 hover:bg-gray-100"
+                                >
+                                    Voltar
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    onClick={handleDeleteCategory}
+                                    className="px-6 py-2 rounded-lg font-semibold shadow text-white"
+                                >
+                                    Excluir
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -271,3 +288,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
         </>
     );
 };
+
+function setShowEditModal(arg0: boolean) {
+    throw new Error("Function not implemented.");
+}
