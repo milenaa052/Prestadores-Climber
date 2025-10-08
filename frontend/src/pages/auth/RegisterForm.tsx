@@ -5,11 +5,12 @@ import { Alert, AlertDescription } from '../../components/ui/alert';
 import { useAuth } from '../../contexts/AuthContext';
 import { AddressForm, AddressFormData } from './AddressForm';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { RadioGroup, RadioGroupItem } from '../../components/ui/radioGroup';
-import InputMask from 'react-input-mask';
 import { RegisterFormData } from '../../types';
+import { ContractorForm } from './ContractorForm';
+import { ProviderForm } from './ProviderForm';
+import axios from 'axios';
 
 export function RegisterForm() {
   const navigate = useNavigate();
@@ -24,10 +25,11 @@ export function RegisterForm() {
     phone: '',
     password: '',
     cep: '',
+    uf: '',
+    city: '',
+    neighborhood: '',
     street: '',
     number: '',
-    city: '',
-    uf: '',
     complement: '',
   });
 
@@ -41,16 +43,19 @@ export function RegisterForm() {
 
     if (!formData.name || !formData.email || !formData.password) {
       setError('Preencha todos os campos obrigatórios');
+      setTimeout(() => setError(""), 3000);
       return;
     }
 
     if (formData.type === 'client' && !formData.cpf) {
       setError('CPF é obrigatório');
+      setTimeout(() => setError(""), 3000);
       return;
     }
 
     if (formData.type === 'provider' && !formData.cnpj) {
       setError('CNPJ é obrigatório');
+      setTimeout(() => setError(""), 3000);
       return;
     }
 
@@ -64,8 +69,28 @@ export function RegisterForm() {
 
     if (!formData.cep || !formData.street || !formData.number || !formData.city || !formData.uf) {
       setError('Preencha todos os campos de endereço');
+      setTimeout(() => setError(""), 3000);
       setIsLoading(false);
       return;
+    }
+
+    try {
+      const payload = {
+        cep: formData.cep,
+        state: formData.uf,
+        city: formData.city,
+        neighborhood: formData.neighborhood,
+        street: formData.street,
+        number: formData.number,
+        complement: formData.complement
+      }
+
+      await axios.post("http://localhost:3000/api/address-registration", payload)
+      navigate("/login");
+
+    } catch (error) {
+      setError("Erro ao cadastrar o endereço");
+      setTimeout(() => setError(""), 3000);
     }
 
     const success = await register({ ...formData, active: true });
@@ -74,6 +99,7 @@ export function RegisterForm() {
       navigate("/login");
     } else {
       setError('Email já cadastrado');
+      setTimeout(() => setError(""), 3000);
     }
 
     setIsLoading(false);
@@ -90,78 +116,28 @@ export function RegisterForm() {
 
           {step === 1 && (
             <form onSubmit={handleNext} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome Completo</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  placeholder="Seu nome completo"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                  placeholder="seu@email.com"
-                />
-              </div>
 
               {formData.type === 'provider' && (
-                <div className="space-y-2">
-                  <Label htmlFor="cnpj">CNPJ</Label>
-                  <InputMask
-                    mask="99.999.999/9999-99"
-                    value={formData.cnpj}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, cnpj: e.target.value })}
-                  >
-                    {(inputProps: any) => <Input {...inputProps} id="cnpj" type="text" required placeholder="CNPJ" />}
-                  </InputMask>
-                </div>
+                <ProviderForm 
+                  formData={formData}
+                  setFormData={setFormData}
+                  onBack={() => setStep(1)}
+                  onSubmit={handleSubmit}
+                  isLoading={isLoading}
+                  setError={setError}
+                />
               )}
 
               {formData.type === 'client' && (
-                <div className="space-y-2">
-                  <Label htmlFor="cpf">CPF</Label>
-                  <InputMask
-                    mask="999.999.999-99"
-                    value={formData.cpf}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, cpf: e.target.value })}
-                  >
-                    {(inputProps: any) => <Input {...inputProps} id="cpf" type="text" required placeholder="CPF" />}
-                  </InputMask>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Telefone</Label>
-                <InputMask
-                  mask="(99) 99999-9999"
-                  value={formData.phone}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
-                >
-                  {(inputProps: any) => <Input {...inputProps} id="phone" type="tel" required placeholder="(99) 99999-9999" />}
-                </InputMask>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                  placeholder="Senha"
+                <ContractorForm 
+                  formData={formData}
+                  setFormData={setFormData}
+                  onBack={() => setStep(1)}
+                  onSubmit={handleSubmit}
+                  isLoading={isLoading}
+                  setError={setError}
                 />
-              </div>
+              )}
 
               <div className="space-y-3">
                 <Label>Tipo de conta</Label>
