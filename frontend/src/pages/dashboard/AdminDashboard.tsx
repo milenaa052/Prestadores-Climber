@@ -47,7 +47,11 @@ export function AdminDashboard() {
 
 
         <TabsContent value="providers" className="space-y-6">
-          <ProvidersSection setAlertMessage={setAlertMessage} setShowAlert={setShowAlert} />
+          <ProvidersSection 
+            setAlertMessage={setAlertMessage} 
+            setShowAlert={setShowAlert}
+            setAlertType={setAlertType} 
+          />
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-6">
