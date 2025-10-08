@@ -92,11 +92,27 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
         getServices();
     },[]);
 
-    const toggleServiceStatus = (idService: number, active: boolean) => {
-        setAlertMessage(`Serviço ${active ? 'ativado' : 'desativado'} com sucesso!`);
+    const toggleServiceStatus = async (service: Service) => {
+        try {
+        const newStatus = service.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        const payload = {
+        name : service.name,
+        categoryId: service.categoryId,
+        status: newStatus
+        }
+        await axios.put(`http://localhost:3000/api/service/${service.idService}`, payload)
+        setAlertMessage(`Serviço ${service.status === 'INACTIVE' ? 'ativado' : 'desativado'} com sucesso!`);
         setAlertType('success');
         setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+        getServices();
+        setTimeout(() => setShowAlert(false), 3000);   
+        } catch (error) {
+            setAlertMessage('Erro ao atualizar status do serviço!');
+            setAlertType('error');
+            setShowAlert(true);
+        
+            setTimeout(() => setShowAlert(false), 3000);
+        }
     };
 
     return (
@@ -173,17 +189,17 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
                                 </div>
 
                                 <div className="flex items-center space-x-2">
-                                    <Badge className={service.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                                        {service.status ? 'Ativo' : 'Inativo'}
+                                    <Badge className={service.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                                        {service.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                                     </Badge>
 
                                     <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => toggleServiceStatus(service.idService, !service.status)}
+                                        onClick={() => toggleServiceStatus(service)}
                                         className="cursor-pointer"
                                     >
-                                        {service.status ? 'Desativar' : 'Ativar'}
+                                        {service.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
                                     </Button>
                                 </div>
                             </div>
