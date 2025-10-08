@@ -52,7 +52,6 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                     type="text" 
                     value={formData.name} 
                     onChange={handleChange} 
-                    required 
                     placeholder="Seu nome completo" 
                 />
             </div>
@@ -64,7 +63,6 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                     type="email" 
                     value={formData.email} 
                     onChange={handleChange} 
-                    required 
                     placeholder="seu@email.com" 
                 />
             </div>
@@ -81,7 +79,6 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                             {...inputProps} 
                             id="cpf" 
                             type="text" 
-                            required 
                             placeholder="999.999.999-99" 
                         />
                     )}
@@ -100,7 +97,6 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                             {...inputProps} 
                             id="phone" 
                             type="text" 
-                            required 
                             placeholder="(99) 99999-9999" 
                         />
                     )}
@@ -114,7 +110,6 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                     type="password" 
                     value={formData.password} 
                     onChange={handleChange} 
-                    required
                     placeholder="Sua senha" 
                 />
                 <p className="text-xs text-gray-500">A senha deve conter letras maiúsculas, minúsculas, números e caracteres especiais</p>

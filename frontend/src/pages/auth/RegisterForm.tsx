@@ -11,6 +11,7 @@ import { RegisterFormData } from '../../types';
 import { ContractorForm } from './ContractorForm';
 import { ProviderForm } from './ProviderForm';
 import axios from 'axios';
+import { cnpj, cpf } from "cpf-cnpj-validator"
 
 export function RegisterForm() {
   const navigate = useNavigate();
@@ -41,8 +42,8 @@ export function RegisterForm() {
     e.preventDefault();
     setError('');
 
-    if (!formData.name || !formData.email || !formData.password) {
-      setError('Preencha todos os campos obrigatórios');
+    if (!formData.name || !formData.email || !formData.password || !formData.phone) {
+      setError('Todos os campos são obrigatórios!');
       setTimeout(() => setError(""), 3000);
       return;
     }
@@ -53,8 +54,20 @@ export function RegisterForm() {
       return;
     }
 
+    if (!cpf.isValid(formData.cpf)) {
+      setError("CPF inválido ou inexistente");
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
+
     if (formData.type === 'provider' && !formData.cnpj) {
       setError('CNPJ é obrigatório');
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
+
+    if (!cnpj.isValid(formData.cnpj)) {
+      setError("CNPJ inválido ou inexistente");
       setTimeout(() => setError(""), 3000);
       return;
     }
@@ -68,7 +81,7 @@ export function RegisterForm() {
     setIsLoading(true);
 
     if (!formData.cep || !formData.street || !formData.number || !formData.city || !formData.uf) {
-      setError('Preencha todos os campos de endereço');
+      setError("Todos os campos são obrigatórios!");
       setTimeout(() => setError(""), 3000);
       setIsLoading(false);
       return;
@@ -152,6 +165,7 @@ export function RegisterForm() {
         <CardHeader className="text-center">
           <CardTitle className="text-lg">Cadastre-se no Prestadores Climber</CardTitle>
         </CardHeader>
+        
         <CardContent>
           {error && <Alert variant="destructive" className="mb-4"><AlertDescription>{error}</AlertDescription></Alert>}
 
