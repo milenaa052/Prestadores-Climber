@@ -4,7 +4,6 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Plus } from 'lucide-react';
-import { mockCategories } from "../../../data/mockData";
 import { Pencil, Trash } from "lucide-react";
 import axios from "axios"
 
@@ -210,9 +209,9 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
             {
                 openModal === 'edit' && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                        <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 w-[90%] max-w-md sm:max-w-lg animate-fadeIn">
+                        <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 w-[90%] max-w-md sm:max-w-lg animate-fadeIn rounded-xl">
                             <div className="flex flex-col items-center">
-                                <div className="bg-blue-100 rounded-full p-3 mb-4">
+                                <div className="mb-4">
                                     <Pencil className="w-8 h-8 text-blue-600" />
                                 </div>
                                 <h3 className="mb-1 text-2xl font-extrabold tracking-tight text-gray-900">
@@ -229,20 +228,20 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                                     placeholder="Novo nome da categoria"
                                     className="mb-6 mt-2"
                                 />
-                                <div className="flex justify-center gap-8 w-full">
+                                <div className="flex justify-center gap-4 w-full">
                                     <Button
                                         variant="outline"
                                         onClick={() => {
                                             setOpenModal(null);
                                             setEditCategory(null);
                                         }}
-                                        className="h-11 rounded-xl border-gray-300 bg-white px-6 font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 hover:text-gray-900 focus-visible:ring-2 focus-visible:ring-gray-400"
+                                        className="h-11 border-gray-300 bg-white px-6 font-medium text-gray-700 hover:text-gray-900 focus-visible:ring-2 focus-visible:ring-gray-400 cursor-pointer"
                                     >
                                         Voltar
                                     </Button>
                                     <Button
                                         onClick={handleEditCategory}
-                                        className="h-11 rounded-xl px-6 font-medium bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow"
+                                        className="h-11 px-6 font-medium bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow cursor-pointer"
                                     >
                                         Salvar
                                     </Button>
@@ -255,28 +254,28 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
             }
             {openModal === 'delete' && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 w-[90%] max-w-md sm:max-w-lg animate-fadeIn scale-100 transition-transform duration-200">
+                    <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 w-[90%] max-w-md sm:max-w-lg animate-fadeIn scale-100 transition-transform duration-200 rounded-xl">
                         <div className="flex flex-col items-center">
-                            <div className="bg-red-100 rounded-full p-3 mb-4">
-                                <Trash className="w-8 h-8 text-red-600" />
+                            <div className="mb-4">
+                                <Trash className="w-8 h-8 text-red-800" />
                             </div>
-                            <h3 className="text-2xl font-bold mb-2 text-gray-800 text-center">Excluir Categoria</h3>
+                            <h3 className="text-2xl font-bold mb-2 text-gray-800 text-center mb-6">Excluir Categoria</h3>
                             <p className="mb-6 text-center text-gray-600">
-                                Tem certeza que deseja excluir <span className="font-semibold text-red-600">{categoryDelete?.name}</span>?<br />
+                                Tem certeza que deseja excluir <span className="font-bold">{categoryDelete?.name}</span>?<br />
                                 Esta ação não poderá ser desfeita.
                             </p>
-                            <div className="flex justify-center gap-6 w-full">
+                            <div className="flex justify-center gap-4 w-full">
                                 <Button
                                     variant="outline"
                                     onClick={() => setOpenModal(null)}
-                                    className="px-6 py-2 rounded-lg border-gray-300 hover:bg-gray-100"
+                                    className="h-11 border-gray-300 bg-white px-6 font-medium text-gray-700 hover:text-gray-900 focus-visible:ring-2 focus-visible:ring-gray-400 cursor-pointer"
                                 >
                                     Voltar
                                 </Button>
                                 <Button
                                     variant="destructive"
                                     onClick={handleDeleteCategory}
-                                    className="px-6 py-2 rounded-lg font-semibold shadow text-white"
+                                    className="px-6 rounded-lg font-semibold shadow text-white cursor-pointer"
                                 >
                                     Excluir
                                 </Button>
@@ -288,7 +287,3 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
         </>
     );
 };
-
-function setShowEditModal(arg0: boolean) {
-    throw new Error("Function not implemented.");
-}
