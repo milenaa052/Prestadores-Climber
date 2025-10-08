@@ -20,15 +20,17 @@ interface Category {
     name: string;
 }
 
-export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }: ServicesSectionProps) {
-    const [newService, setNewService] = useState({
-        name: '',
-        description: '',
-        category: '',
-    });
+interface Service {
+    idService: number;
+    name: string;
+    categoryId: number;
+    status: string;
+}
 
+export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }: ServicesSectionProps) {
     const [name, setName] = useState('');
     const [category, setCategory] = useState<Category [] >([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     const getCategoryByName = () => {
          axios.get(`http://localhost:3000/api/categories`)
@@ -43,8 +45,8 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
         getCategoryByName();
     }, [name]);
 
-    const handleAddService = () => {
-        if (!newService.name || !newService.description || !newService.category) {
+    const handleAddService = async () => {
+        if (!name || !selectedCategory) {
             setAlertMessage('Prencha todos os campos para criar um serviço');
             setAlertType('error');
             setShowAlert(true);
@@ -52,12 +54,26 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
             return;
         }
 
-        setAlertMessage('Serviço criado com sucesso!');
-        setAlertType('success');
-        setShowAlert(true);
-        setNewService({ name: '', description: '', category: '' });
+        try {
+            const payload = {
+                name: name,
+                categoryId: Number(selectedCategory), 
+            };
+            await axios.post('http://localhost:3000/api/service-registration', payload);
+            setAlertMessage('Serviço criado com sucesso!');
+            setAlertType('success');
+            setShowAlert(true);
         
-        setTimeout(() => setShowAlert(false), 3000);
+            setTimeout(() => setShowAlert(false), 3000);
+        } catch (error) {
+            setAlertMessage('Erro ao cadastrar serviço!');
+            setAlertType('error');
+            setShowAlert(true);
+        
+            setTimeout(() => setShowAlert(false), 3000);  
+        }
+
+
     };
 
     const toggleServiceStatus = (serviceId: string, active: boolean) => {
@@ -84,8 +100,8 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
                             <Label htmlFor="service-name">Nome do Serviço</Label>
                             <Input
                                 id="service-name"
-                                value={newService.name}
-                                onChange={(e) => setNewService({...newService, name: e.target.value})}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 placeholder="Nome do serviço"
                             />
                         </div>
@@ -95,30 +111,21 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
 
                             <Select
                                 id="service-category"
-                                value={newService.category}
+                                value={selectedCategory}
                                 onChange={(e) =>
-                                    setNewService({ ...newService, category: e.target.value })
+                                    setSelectedCategory(e.target.value)
                                 }
                             >
                                 <option value="">Selecione uma categoria</option>
                                 {category.map((category) => (
-                                    <option key={category.idCategory} value={category.name}>
+                                    <option key={category.idCategory} value={category.idCategory}>
                                         {category.name}
                                     </option>
                                 ))}
                             </Select>
                         </div>
                     </div>
-
-                    <div className="space-y-2 mb-4">
-                        <Label htmlFor="service-description">Descrição</Label>
-                        <Textarea
-                            id="service-description"
-                            value={newService.description}
-                            onChange={(e) => setNewService({...newService, description: e.target.value})}
-                            placeholder="Descrição do serviço"
-                        />
-                    </div>
+                    
 
                     <Button onClick={handleAddService} className="cursor-pointer">
                         <Plus className="h-4 w-4 mr-1" />
