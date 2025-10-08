@@ -31,6 +31,7 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
     const [name, setName] = useState('');
     const [category, setCategory] = useState<Category [] >([]);
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [services, setServices] = useState<Service [] >([]);
 
     const getCategoryByName = () => {
          axios.get(`http://localhost:3000/api/categories`)
@@ -63,7 +64,7 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
             setAlertMessage('Serviço criado com sucesso!');
             setAlertType('success');
             setShowAlert(true);
-        
+            getServices();
             setTimeout(() => setShowAlert(false), 3000);
         } catch (error) {
             setAlertMessage('Erro ao cadastrar serviço!');
@@ -72,11 +73,26 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
         
             setTimeout(() => setShowAlert(false), 3000);  
         }
-
-
     };
 
-    const toggleServiceStatus = (serviceId: string, active: boolean) => {
+    const getServices = () => {
+        axios.get(`http://localhost:3000/api/services`)
+        .then((response) => {
+            setServices(response.data);
+        })
+        .catch ((error) => { 
+            setAlertMessage('Erro ao buscar serviço!');
+            setAlertType('error');
+            setShowAlert(true);
+        
+            setTimeout(() => setShowAlert(false), 3000);
+        }); 
+    }; 
+       useEffect(() => {
+        getServices();
+    },[]);
+
+    const toggleServiceStatus = (idService: number, active: boolean) => {
         setAlertMessage(`Serviço ${active ? 'ativado' : 'desativado'} com sucesso!`);
         setAlertType('success');
         setShowAlert(true);
@@ -145,34 +161,36 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
 
                 <CardContent>
                     <div className="space-y-4">
-                        {mockServices.map((service) => (
-                            <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        {services.length > 0 ? (
+                         services.map((service) => (
+                            <div key={service.idService} className="flex items-center justify-between p-4 border rounded-lg">
                                 <div className="flex-1">
                                     <h4 className="font-medium">{service.name}</h4>
 
-                                    <p className="text-sm text-gray-600">{service.description}</p>
-
                                     <Badge variant="secondary" className="mt-1">
-                                        {service.category}
+                                        {category.find(cat => cat.idCategory === service.categoryId)?.name || 'Categoria Desconhecida'}
                                     </Badge>
                                 </div>
 
                                 <div className="flex items-center space-x-2">
-                                    <Badge className={service.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                                        {service.active ? 'Ativo' : 'Inativo'}
+                                    <Badge className={service.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                                        {service.status ? 'Ativo' : 'Inativo'}
                                     </Badge>
 
                                     <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => toggleServiceStatus(service.id, !service.active)}
+                                        onClick={() => toggleServiceStatus(service.idService, !service.status)}
                                         className="cursor-pointer"
                                     >
-                                        {service.active ? 'Desativar' : 'Ativar'}
+                                        {service.status ? 'Desativar' : 'Ativar'}
                                     </Button>
                                 </div>
                             </div>
-                        ))}
+                        ))   
+                        ) : (
+                            <p className="text-sm text-gray-500">Nenhum serviço cadastrado.</p>
+                        )}
                     </div>
                 </CardContent>
             </Card>
