@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 import { useAuth } from '../../contexts/AuthContext';
-import { AddressForm, AddressFormData } from './AddressForm';
+import { AddressForm } from './AddressForm';
 import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
 import { RadioGroup, RadioGroupItem } from '../../components/ui/radioGroup';
@@ -85,24 +85,65 @@ export function RegisterForm() {
         complement: formData.complement
       }
 
-      await axios.post("http://localhost:3000/api/address-registration", payload)
-      navigate("/login");
+      const addressResponse = await axios.post("http://localhost:3000/api/address-registration", payload);
+      const addressId = addressResponse.data.idAddress;
+
+      let userResponse;
+
+      if (formData.type === 'client') {
+        const contractorPayload = {
+          addressId: addressId,
+          name: formData.name,
+          cpfContractor: formData.cpf,
+          phone: formData.phone,
+          email: formData.email,
+          password: formData.password,
+          photUrl: '',
+          validatedEmail: false,
+          emailValidationToken: '',
+          savedLogin: false
+        };
+        
+        userResponse = await axios.post("http://localhost:3000/api/contractor-registration", contractorPayload);
+
+      } else {
+        const providerPayload = {
+          addressId: addressId,
+          name: formData.name,
+          cnpjProvider: formData.cnpj,
+          phone: formData.phone,
+          email: formData.email,
+          password: formData.password,
+          photUrl: '',
+          biography: '',
+          linkedin: '',
+          instagram: '',
+          validatedEmail: false,
+          emailValidationToken: '',
+          savedLogin: false
+        };
+        
+        userResponse = await axios.post("http://localhost:3000/api/provider-registration", providerPayload);
+      };
+
+      const authSuccess = await register({ 
+        ...formData, 
+        active: true 
+      });
+
+      if (authSuccess) {
+        navigate("/login");
+      } else {
+        setError("Erro ao criar conta!");
+        setTimeout(() => setError(""), 3000);
+      }
 
     } catch (error) {
-      setError("Erro ao cadastrar o endereço");
+      setError("Erro ao realizar cadastro. Tente novamente.");
       setTimeout(() => setError(""), 3000);
+    } finally {
+      setIsLoading(false);
     }
-
-    const success = await register({ ...formData, active: true });
-
-    if (success) {
-      navigate("/login");
-    } else {
-      setError('Email já cadastrado');
-      setTimeout(() => setError(""), 3000);
-    }
-
-    setIsLoading(false);
   };
 
   return (
@@ -121,10 +162,6 @@ export function RegisterForm() {
                 <ProviderForm 
                   formData={formData}
                   setFormData={setFormData}
-                  onBack={() => setStep(1)}
-                  onSubmit={handleSubmit}
-                  isLoading={isLoading}
-                  setError={setError}
                 />
               )}
 
@@ -132,10 +169,6 @@ export function RegisterForm() {
                 <ContractorForm 
                   formData={formData}
                   setFormData={setFormData}
-                  onBack={() => setStep(1)}
-                  onSubmit={handleSubmit}
-                  isLoading={isLoading}
-                  setError={setError}
                 />
               )}
 

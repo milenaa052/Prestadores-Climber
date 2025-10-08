@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { Button } from '../../components/ui/button';
+import React from 'react';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import InputMask from 'react-input-mask';
@@ -16,30 +15,36 @@ export interface ContractorFormData {
 interface ContractorFormProps {
   formData: RegisterFormData;
   setFormData: React.Dispatch<React.SetStateAction<RegisterFormData>>;
-  onBack: () => void;
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  isLoading: boolean;
-  setError: (msg: string) => void;
+}
+
+interface InputMaskProps {
+  id?: string;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const ContractorForm: React.FC<ContractorFormProps> = ({
   formData,
-  setFormData,
-  onBack,
-  onSubmit,
-  isLoading,
-  setError
+  setFormData
 }) => {
-
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setFormData(prev => ({ ...prev, [id]: value }));
     };
 
+    const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleChange(e);
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleChange(e);
+    };
 
     return (
-        <form onSubmit={onSubmit} className="space-y-4">
+        <div className="space-y-4">
             <div className="space-y-2">
                 <Label htmlFor="name">Nome Completo</Label>
                 <Input 
@@ -56,7 +61,7 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                 <Label htmlFor="email">Email</Label>
                 <Input 
                     id="email" 
-                    type="text" 
+                    type="email" 
                     value={formData.email} 
                     onChange={handleChange} 
                     required 
@@ -69,9 +74,17 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                 <InputMask
                     mask="999.999.999-99"
                     value={formData.cpf}
-                    onChange={handleChange}
-                    >
-                    {(inputProps) => <Input {...inputProps} id="cpf" type="text" required placeholder="999.999.999-99" />}
+                    onChange={handleCpfChange}
+                >
+                    {(inputProps: InputMaskProps) => (
+                        <Input 
+                            {...inputProps} 
+                            id="cpf" 
+                            type="text" 
+                            required 
+                            placeholder="999.999.999-99" 
+                        />
+                    )}
                 </InputMask>
             </div>
 
@@ -80,9 +93,17 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                 <InputMask
                     mask="(99) 99999-9999"
                     value={formData.phone}
-                    onChange={handleChange}
-                    >
-                    {(inputProps) => <Input {...inputProps} id="phone" type="text" required placeholder="(99) 99999-9999" />}
+                    onChange={handlePhoneChange}
+                >
+                    {(inputProps: InputMaskProps) => (
+                        <Input 
+                            {...inputProps} 
+                            id="phone" 
+                            type="text" 
+                            required 
+                            placeholder="(99) 99999-9999" 
+                        />
+                    )}
                 </InputMask>
             </div>
 
@@ -93,9 +114,11 @@ export const ContractorForm: React.FC<ContractorFormProps> = ({
                     type="password" 
                     value={formData.password} 
                     onChange={handleChange} 
-                    placeholder="Senha" 
+                    required
+                    placeholder="Sua senha" 
                 />
+                <p className="text-xs text-gray-500">A senha deve conter letras maiúsculas, minúsculas, números e caracteres especiais</p>
             </div>
-        </form>
+        </div>
     );
 };
