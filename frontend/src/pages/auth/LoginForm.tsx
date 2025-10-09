@@ -23,14 +23,15 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const success = await login(email, password);
+      await login(email, password);
+
+      setSuccess('Login realizado com sucesso!');
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
       
-      if (success) {
-        setSuccess('Login realizado com sucesso!');
-        setTimeout(() => setSuccess(""), 3000);
-      }
     } catch (error) {
-      setError('Erro ao fazer login');
+      setError("Erro ao fazer login");
       setTimeout(() => setError(""), 3000);
     } finally {
       setIsLoading(false);
@@ -48,6 +49,12 @@ export function LoginForm() {
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert variant="success" className='mb-4'>
+                <AlertDescription>{success}</AlertDescription>
               </Alert>
             )}
             

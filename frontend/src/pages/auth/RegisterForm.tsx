@@ -158,7 +158,7 @@ export function RegisterForm() {
         userResponse = await api.post('/provider-registration', providerPayload);
       };
 
-      setSuccess('Cadastro realizado com sucesso! Redirecionando para login...');
+      setSuccess('Cadastro realizado com sucesso!');
       
       setTimeout(() => {
         navigate("/login");
@@ -181,10 +181,20 @@ export function RegisterForm() {
         </CardHeader>
         
         <CardContent>
-          {error && <Alert variant="destructive" className="mb-4"><AlertDescription>{error}</AlertDescription></Alert>}
+          {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
+            {success && (
+              <Alert variant="success" className='mb-4'>
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
 
           {step === 1 && (
-            <form onSubmit={handleNext} className="space-y-4">
+            <form onSubmit={handleNext} className="space-y-4 mt-4">
 
               {formData.type === 'provider' && (
                 <ProviderForm 

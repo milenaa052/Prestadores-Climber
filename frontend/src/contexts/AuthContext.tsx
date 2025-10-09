@@ -22,7 +22,7 @@ interface RegisterData {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     
     try {
@@ -82,24 +82,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('climber_user', JSON.stringify(userData));
       localStorage.setItem('climber_token', token);
       
-      setIsLoading(false);
-      return true;
     } catch (error: unknown) {
       console.error('Login error:', error);
       
-      let errorMessage = 'Erro ao fazer login';
+      let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
       
-      if (error instanceof Error && error.message) {
-        errorMessage = error.message;
-      } else if (typeof error === 'object' && error !== null && 'response' in error) {
+      if (typeof error === 'object' && error !== null && 'response' in error) {
         const apiError = error as { response?: { data?: { error?: string } } };
         if (apiError.response?.data?.error) {
           errorMessage = apiError.response.data.error;
         }
       }
       
-      setIsLoading(false);
       throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -128,11 +125,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('CNPJ é obrigatório para prestadores');
       }
       
-      setIsLoading(false);
       return true;
       
     } catch (error: unknown) {
-      console.error('Erro ao validar dados do cadastro');
+      console.error('Register validation error:', error);
       
       let errorMessage = 'Erro ao validar dados do cadastro';
       
@@ -140,8 +136,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         errorMessage = error.message;
       }
       
-      setIsLoading(false);
       throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
