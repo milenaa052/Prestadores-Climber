@@ -5,10 +5,9 @@ import { Badge } from "../../ui/badge";
 import { Input } from "../../ui/input";
 import { Select } from "../../ui/select";
 import { Label } from "../../ui/label";
-import { Textarea } from "../../ui/textarea";
 import { Plus } from 'lucide-react';
-import { mockServices, mockCategories } from "../../../data/mockData";
 import axios from "axios";
+import { api } from "../../../services/Api";
 
 interface ServicesSectionProps {
   setShowAlert: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,7 +33,7 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
     const [services, setServices] = useState<Service [] >([]);
 
     const getCategoryByName = () => {
-         axios.get(`http://localhost:3000/api/categories`)
+        api.get("/categories")
         .then((response) => {
             setCategory(response.data);
         })
@@ -60,23 +59,25 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
                 name: name,
                 categoryId: Number(selectedCategory), 
             };
-            await axios.post('http://localhost:3000/api/service-registration', payload);
+
+            await api.post('/service-registration', payload);
+
             setAlertMessage('Serviço criado com sucesso!');
             setAlertType('success');
             setShowAlert(true);
             getServices();
             setTimeout(() => setShowAlert(false), 3000);
+
         } catch (error) {
             setAlertMessage('Erro ao cadastrar serviço!');
             setAlertType('error');
             setShowAlert(true);
-        
             setTimeout(() => setShowAlert(false), 3000);  
         }
     };
 
     const getServices = () => {
-        axios.get(`http://localhost:3000/api/services`)
+        api.get("/services")
         .then((response) => {
             setServices(response.data);
         })
@@ -84,7 +85,6 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
             setAlertMessage('Erro ao buscar serviço!');
             setAlertType('error');
             setShowAlert(true);
-        
             setTimeout(() => setShowAlert(false), 3000);
         }); 
     }; 
@@ -94,23 +94,25 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
 
     const toggleServiceStatus = async (service: Service) => {
         try {
-        const newStatus = service.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-        const payload = {
-        name : service.name,
-        categoryId: service.categoryId,
-        status: newStatus
-        }
-        await axios.put(`http://localhost:3000/api/service/${service.idService}`, payload)
-        setAlertMessage(`Serviço ${service.status === 'INACTIVE' ? 'ativado' : 'desativado'} com sucesso!`);
-        setAlertType('success');
-        setShowAlert(true);
-        getServices();
-        setTimeout(() => setShowAlert(false), 3000);   
+            const newStatus = service.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+            const payload = {
+                name : service.name,
+                categoryId: service.categoryId,
+                status: newStatus
+            }
+
+            await api.put(`/service/${service.idService}`, payload);
+
+            setAlertMessage(`Serviço ${service.status === 'INACTIVE' ? 'ativado' : 'desativado'} com sucesso!`);
+            setAlertType('success');
+            setShowAlert(true);
+            getServices();
+            setTimeout(() => setShowAlert(false), 3000); 
+
         } catch (error) {
             setAlertMessage('Erro ao atualizar status do serviço!');
             setAlertType('error');
             setShowAlert(true);
-        
             setTimeout(() => setShowAlert(false), 3000);
         }
     };
