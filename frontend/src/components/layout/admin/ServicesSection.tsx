@@ -1,29 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
 import { Input } from "../../ui/input";
 import { Select } from "../../ui/select";
 import { Label } from "../../ui/label";
-import { Textarea } from "../../ui/textarea";
 import { Plus } from 'lucide-react';
-import { mockServices, mockCategories } from "../../../data/mockData";
+import axios from "axios";
+import { api } from "../../../services/Api";
 
 interface ServicesSectionProps {
   setShowAlert: React.Dispatch<React.SetStateAction<boolean>>;
   setAlertMessage: React.Dispatch<React.SetStateAction<string>>;
   setAlertType: React.Dispatch<React.SetStateAction<'success' | 'error'>>;
 }
+interface Category {
+    idCategory: number;
+    name: string;
+}
+
+interface Service {
+    idService: number;
+    name: string;
+    categoryId: number;
+    status: string;
+}
 
 export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }: ServicesSectionProps) {
-    const [newService, setNewService] = useState({
-        name: '',
-        description: '',
-        category: '',
-    });
+    const [name, setName] = useState('');
+    const [category, setCategory] = useState<Category [] >([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [services, setServices] = useState<Service [] >([]);
 
-    const handleAddService = () => {
-        if (!newService.name || !newService.description || !newService.category) {
+    const getCategoryByName = () => {
+        api.get("/categories")
+        .then((response) => {
+            setCategory(response.data);
+        })
+        .catch((error) => {
+            console.error('Error fetching category:', error);
+        });
+    }
+    useEffect(() => {
+        getCategoryByName();
+    }, [name]);
+
+    const handleAddService = async () => {
+        if (!name || !selectedCategory) {
             setAlertMessage('Prencha todos os campos para criar um serviço');
             setAlertType('error');
             setShowAlert(true);
@@ -31,19 +54,67 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
             return;
         }
 
-        setAlertMessage('Serviço criado com sucesso!');
-        setAlertType('success');
-        setShowAlert(true);
-        setNewService({ name: '', description: '', category: '' });
-        
-        setTimeout(() => setShowAlert(false), 3000);
+        try {
+            const payload = {
+                name: name,
+                categoryId: Number(selectedCategory), 
+            };
+
+            await api.post('/service-registration', payload);
+
+            setAlertMessage('Serviço criado com sucesso!');
+            setAlertType('success');
+            setShowAlert(true);
+            getServices();
+            setTimeout(() => setShowAlert(false), 3000);
+
+        } catch (error) {
+            setAlertMessage('Erro ao cadastrar serviço!');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);  
+        }
     };
 
-    const toggleServiceStatus = (serviceId: string, active: boolean) => {
-        setAlertMessage(`Serviço ${active ? 'ativado' : 'desativado'} com sucesso!`);
-        setAlertType('success');
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+    const getServices = () => {
+        api.get("/services")
+        .then((response) => {
+            setServices(response.data);
+        })
+        .catch ((error) => { 
+            setAlertMessage('Erro ao buscar serviço!');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+        }); 
+    }; 
+       useEffect(() => {
+        getServices();
+    },[]);
+
+    const toggleServiceStatus = async (service: Service) => {
+        try {
+            const newStatus = service.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+            const payload = {
+                name : service.name,
+                categoryId: service.categoryId,
+                status: newStatus
+            }
+
+            await api.put(`/service/${service.idService}`, payload);
+
+            setAlertMessage(`Serviço ${service.status === 'INACTIVE' ? 'ativado' : 'desativado'} com sucesso!`);
+            setAlertType('success');
+            setShowAlert(true);
+            getServices();
+            setTimeout(() => setShowAlert(false), 3000); 
+
+        } catch (error) {
+            setAlertMessage('Erro ao atualizar status do serviço!');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+        }
     };
 
     return (
@@ -63,8 +134,8 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
                             <Label htmlFor="service-name">Nome do Serviço</Label>
                             <Input
                                 id="service-name"
-                                value={newService.name}
-                                onChange={(e) => setNewService({...newService, name: e.target.value})}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 placeholder="Nome do serviço"
                             />
                         </div>
@@ -74,30 +145,21 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
 
                             <Select
                                 id="service-category"
-                                value={newService.category}
+                                value={selectedCategory}
                                 onChange={(e) =>
-                                    setNewService({ ...newService, category: e.target.value })
+                                    setSelectedCategory(e.target.value)
                                 }
                             >
                                 <option value="">Selecione uma categoria</option>
-                                {mockCategories.map((category) => (
-                                    <option key={category.id} value={category.name}>
+                                {category.map((category) => (
+                                    <option key={category.idCategory} value={category.idCategory}>
                                         {category.name}
                                     </option>
                                 ))}
                             </Select>
                         </div>
                     </div>
-
-                    <div className="space-y-2 mb-4">
-                        <Label htmlFor="service-description">Descrição</Label>
-                        <Textarea
-                            id="service-description"
-                            value={newService.description}
-                            onChange={(e) => setNewService({...newService, description: e.target.value})}
-                            placeholder="Descrição do serviço"
-                        />
-                    </div>
+                    
 
                     <Button onClick={handleAddService} className="cursor-pointer">
                         <Plus className="h-4 w-4 mr-1" />
@@ -117,34 +179,36 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
 
                 <CardContent>
                     <div className="space-y-4">
-                        {mockServices.map((service) => (
-                            <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        {services.length > 0 ? (
+                         services.map((service) => (
+                            <div key={service.idService} className="flex items-center justify-between p-4 border rounded-lg">
                                 <div className="flex-1">
                                     <h4 className="font-medium">{service.name}</h4>
 
-                                    <p className="text-sm text-gray-600">{service.description}</p>
-
                                     <Badge variant="secondary" className="mt-1">
-                                        {service.category}
+                                        {category.find(cat => cat.idCategory === service.categoryId)?.name || 'Categoria Desconhecida'}
                                     </Badge>
                                 </div>
 
                                 <div className="flex items-center space-x-2">
-                                    <Badge className={service.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                                        {service.active ? 'Ativo' : 'Inativo'}
+                                    <Badge className={service.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                                        {service.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                                     </Badge>
 
                                     <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => toggleServiceStatus(service.id, !service.active)}
+                                        onClick={() => toggleServiceStatus(service)}
                                         className="cursor-pointer"
                                     >
-                                        {service.active ? 'Desativar' : 'Ativar'}
+                                        {service.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
                                     </Button>
                                 </div>
                             </div>
-                        ))}
+                        ))   
+                        ) : (
+                            <p className="text-sm text-gray-500">Nenhum serviço cadastrado.</p>
+                        )}
                     </div>
                 </CardContent>
             </Card>
