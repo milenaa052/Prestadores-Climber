@@ -39,7 +39,7 @@ export const createAdmin = async (req: Request, res: Response) => {
             phone,
             email,
             password,
-            status: 1
+            status: "ACTIVE"
         });
 
         return res.status(201).json(admin);

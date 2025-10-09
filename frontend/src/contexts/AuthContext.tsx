@@ -1,10 +1,29 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, Provider, Client } from '../types';
+import { api } from '../services/Api';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'contractor' | 'provider';
+  token: string;
+}
+
+interface RegisterData {
+  name: string;
+  email: string;
+  type: 'client' | 'provider';
+  cpf?: string;
+  cnpj?: string;
+  phone: string;
+  password: string;
+  active: boolean;
+}
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<boolean>;
+  register: (userData: RegisterData) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -12,85 +31,124 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'João Silva',
-    email: 'joao@provider.com',
-    type: 'provider',
-    active: true,
-    createdAt: '2024-01-01',
-  },
-  {
-    id: '2',
-    name: 'Maria Santos',
-    email: 'maria@client.com',
-    type: 'client',
-    active: true,
-    createdAt: '2024-01-01',
-  },
-  {
-    id: '3',
-    name: 'Admin',
-    email: 'admin@climber.com',
-    type: 'admin',
-    active: true,
-    createdAt: '2024-01-01',
-  },
-];
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('climber_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const token = localStorage.getItem('climber_token');
+    
+    if (savedUser && token) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+        validateToken();
+      } catch (error) {
+        console.error('Erro ao carregar usuário salvo:');
+        localStorage.removeItem('climber_user');
+        localStorage.removeItem('climber_token');
+      }
     }
     setIsLoading(false);
   }, []);
 
+  const validateToken = async () => {
+    try {
+      await api.get('/user');
+    } catch (error) {
+      console.error('Falha na validação do token');
+      logout();
+    }
+  };
+
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     
-    const foundUser = mockUsers.find(u => u.email === email);
-    if (foundUser && foundUser.active) {
-      setUser(foundUser);
-      localStorage.setItem('climber_user', JSON.stringify(foundUser));
+    try {
+      const response = await api.post('/login', { email, password });
+
+      const { id, name, email: userEmail, role, token } = response.data;
+      
+      const userData: User = {
+        id,
+        name,
+        email: userEmail,
+        role,
+        token
+      };
+
+      setUser(userData);
+      localStorage.setItem('climber_user', JSON.stringify(userData));
+      localStorage.setItem('climber_token', token);
+      
       setIsLoading(false);
       return true;
+    } catch (error: unknown) {
+      console.error('Login error:', error);
+      
+      let errorMessage = 'Erro ao fazer login';
+      
+      if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'response' in error) {
+        const apiError = error as { response?: { data?: { error?: string } } };
+        if (apiError.response?.data?.error) {
+          errorMessage = apiError.response.data.error;
+        }
+      }
+      
+      setIsLoading(false);
+      throw new Error(errorMessage);
     }
-    
-    setIsLoading(false);
-    return false;
   };
 
-  const register = async (userData: Omit<User, 'id' | 'createdAt'>): Promise<boolean> => {
+  const register = async (userData: RegisterData): Promise<boolean> => {
     setIsLoading(true);
     
-    const existingUser = mockUsers.find(u => u.email === userData.email);
-    if (existingUser) {
+    try {
+      if (!userData.name || !userData.email || !userData.password || !userData.phone) {
+        throw new Error('Todos os campos são obrigatórios');
+      }
+
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(userData.email)) {
+        throw new Error('Email inválido');
+      }
+
+      if (userData.password.length < 6) {
+        throw new Error('Senha deve ter pelo menos 6 caracteres');
+      }
+
+      if (userData.type === 'client' && (!userData.cpf || userData.cpf.length === 0)) {
+        throw new Error('CPF é obrigatório para contratantes');
+      }
+
+      if (userData.type === 'provider' && (!userData.cnpj || userData.cnpj.length === 0)) {
+        throw new Error('CNPJ é obrigatório para prestadores');
+      }
+      
       setIsLoading(false);
-      return false;
+      return true;
+      
+    } catch (error: unknown) {
+      console.error('Erro ao validar dados do cadastro');
+      
+      let errorMessage = 'Erro ao validar dados do cadastro';
+      
+      if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+      }
+      
+      setIsLoading(false);
+      throw new Error(errorMessage);
     }
-
-    const newUser: User = {
-      ...userData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-
-    mockUsers.push(newUser);
-    //setUser(newUser);
-    //localStorage.setItem('climber_user', JSON.stringify(newUser));
-    setIsLoading(false);
-    return true;
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('climber_user');
+    localStorage.removeItem('climber_token');
   };
 
   const value: AuthContextType = {

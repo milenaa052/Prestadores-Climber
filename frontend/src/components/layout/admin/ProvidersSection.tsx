@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
 import { UserCheck, UserX } from 'lucide-react';
-import axios from "axios";
+import { api } from "../../../services/Api";
 
 interface ProvidersSectionProps {
     setAlertMessage: (msg: string) => void;
@@ -32,7 +32,7 @@ export function ProvidersSection({ setAlertMessage, setShowAlert, setAlertType }
     const [providers, setProviders] = useState<Providers[]>([]);
 
     const getProviders = async () => {
-        await axios.get("http://localhost:3000/api/providers")
+        await api.get("providers")
         .then((response) => {
             setProviders(response.data);
         })

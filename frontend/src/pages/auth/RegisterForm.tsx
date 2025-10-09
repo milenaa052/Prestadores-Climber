@@ -10,8 +10,8 @@ import { RadioGroup, RadioGroupItem } from '../../components/ui/radioGroup';
 import { RegisterFormData } from '../../types';
 import { ContractorForm } from './ContractorForm';
 import { ProviderForm } from './ProviderForm';
-import axios from 'axios';
 import { cnpj, cpf } from "cpf-cnpj-validator"
+import { api } from '../../services/Api';
 
 export function RegisterForm() {
   const navigate = useNavigate();
@@ -35,12 +35,14 @@ export function RegisterForm() {
   });
 
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
 
-  const handleNext = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (!formData.name || !formData.email || !formData.password || !formData.phone) {
       setError('Todos os campos são obrigatórios!');
@@ -54,7 +56,7 @@ export function RegisterForm() {
       return;
     }
 
-    if (!cpf.isValid(formData.cpf)) {
+    if (formData.type === 'client' && !cpf.isValid(formData.cpf)) {
       setError("CPF inválido ou inexistente");
       setTimeout(() => setError(""), 3000);
       return;
@@ -66,18 +68,35 @@ export function RegisterForm() {
       return;
     }
 
-    if (!cnpj.isValid(formData.cnpj)) {
+    if (formData.type === 'provider' && !cnpj.isValid(formData.cnpj)) {
       setError("CNPJ inválido ou inexistente");
       setTimeout(() => setError(""), 3000);
       return;
     }
 
-    setStep(2);
+    try {
+      await register({ 
+        name: formData.name,
+        email: formData.email,
+        type: formData.type,
+        cpf: formData.cpf,
+        cnpj: formData.cnpj,
+        phone: formData.phone,
+        password: formData.password,
+        active: true
+      });
+      
+      setStep(2);
+    } catch (error) {
+      setError("Erro ao validar dados!");
+      setTimeout(() => setError(""), 3000);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setIsLoading(true);
 
     if (!formData.cep || !formData.street || !formData.number || !formData.city || !formData.uf) {
@@ -88,7 +107,7 @@ export function RegisterForm() {
     }
 
     try {
-      const payload = {
+      const addressPayload = {
         cep: formData.cep,
         state: formData.uf,
         city: formData.city,
@@ -98,7 +117,7 @@ export function RegisterForm() {
         complement: formData.complement
       }
 
-      const addressResponse = await axios.post("http://localhost:3000/api/address-registration", payload);
+      const addressResponse = await api.post('/address-registration', addressPayload);
       const addressId = addressResponse.data.idAddress;
 
       let userResponse;
@@ -117,7 +136,7 @@ export function RegisterForm() {
           savedLogin: false
         };
         
-        userResponse = await axios.post("http://localhost:3000/api/contractor-registration", contractorPayload);
+        userResponse = await api.post('/contractor-registration', contractorPayload);
 
       } else {
         const providerPayload = {
@@ -136,24 +155,19 @@ export function RegisterForm() {
           savedLogin: false
         };
         
-        userResponse = await axios.post("http://localhost:3000/api/provider-registration", providerPayload);
+        userResponse = await api.post('/provider-registration', providerPayload);
       };
 
-      const authSuccess = await register({ 
-        ...formData, 
-        active: true 
-      });
-
-      if (authSuccess) {
+      setSuccess('Cadastro realizado com sucesso! Redirecionando para login...');
+      
+      setTimeout(() => {
         navigate("/login");
-      } else {
-        setError("Erro ao criar conta!");
-        setTimeout(() => setError(""), 3000);
-      }
+      }, 2000);
 
     } catch (error) {
       setError("Erro ao realizar cadastro. Tente novamente.");
       setTimeout(() => setError(""), 3000);
+      console.log(error)
     } finally {
       setIsLoading(false);
     }
