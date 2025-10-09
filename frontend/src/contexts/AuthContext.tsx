@@ -9,21 +9,9 @@ interface User {
   token: string;
 }
 
-interface RegisterData {
-  name: string;
-  email: string;
-  type: 'client' | 'provider';
-  cpf?: string;
-  cnpj?: string;
-  phone: string;
-  password: string;
-  active: boolean;
-}
-
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: RegisterData) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -100,48 +88,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (userData: RegisterData): Promise<boolean> => {
-    setIsLoading(true);
-    
-    try {
-      if (!userData.name || !userData.email || !userData.password || !userData.phone) {
-        throw new Error('Todos os campos são obrigatórios');
-      }
-
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(userData.email)) {
-        throw new Error('Email inválido');
-      }
-
-      if (userData.password.length < 6) {
-        throw new Error('Senha deve ter pelo menos 6 caracteres');
-      }
-
-      if (userData.type === 'client' && (!userData.cpf || userData.cpf.length === 0)) {
-        throw new Error('CPF é obrigatório para contratantes');
-      }
-
-      if (userData.type === 'provider' && (!userData.cnpj || userData.cnpj.length === 0)) {
-        throw new Error('CNPJ é obrigatório para prestadores');
-      }
-      
-      return true;
-      
-    } catch (error: unknown) {
-      console.error('Register validation error:', error);
-      
-      let errorMessage = 'Erro ao validar dados do cadastro';
-      
-      if (error instanceof Error && error.message) {
-        errorMessage = error.message;
-      }
-      
-      throw new Error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const logout = () => {
     setUser(null);
     localStorage.removeItem('climber_user');
@@ -151,7 +97,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value: AuthContextType = {
     user,
     login,
-    register,
     logout,
     isAuthenticated: !!user,
     isLoading,

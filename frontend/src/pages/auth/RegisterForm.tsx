@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Alert, AlertDescription } from '../../components/ui/alert';
-import { useAuth } from '../../contexts/AuthContext';
 import { AddressForm } from './AddressForm';
 import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
@@ -15,7 +14,6 @@ import { api } from '../../services/Api';
 
 export function RegisterForm() {
   const navigate = useNavigate();
-  const { register } = useAuth();
 
   const [formData, setFormData] = useState<RegisterFormData>({
     name: '',
@@ -74,23 +72,7 @@ export function RegisterForm() {
       return;
     }
 
-    try {
-      await register({ 
-        name: formData.name,
-        email: formData.email,
-        type: formData.type,
-        cpf: formData.cpf,
-        cnpj: formData.cnpj,
-        phone: formData.phone,
-        password: formData.password,
-        active: true
-      });
-      
-      setStep(2);
-    } catch (error) {
-      setError("Erro ao validar dados!");
-      setTimeout(() => setError(""), 3000);
-    }
+    setStep(2);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
