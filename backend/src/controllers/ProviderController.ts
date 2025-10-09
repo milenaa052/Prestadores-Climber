@@ -81,9 +81,10 @@ export const createProvider = async (req: Request, res: Response) => {
 export const updateProvider = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const loggedInProvider = res.locals.user.idProvider;
+        const adminUser = res.locals.user.idAdmin;
         const idProviderUpdate = Number(req.params.id);
 
-        if (Number(loggedInProvider) !== idProviderUpdate) {
+        if (Number(loggedInProvider) !== idProviderUpdate && !adminUser) {
             return res.status(403).json({ error: "You do not have permission to edit this user" })
         }
 
