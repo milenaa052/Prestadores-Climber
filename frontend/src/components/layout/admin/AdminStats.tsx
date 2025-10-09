@@ -1,12 +1,80 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Users, Settings, Star, UserCheck } from "lucide-react";
-import { mockProviders, mockServices, mockRatings } from "../../../data/mockData";
+import { mockRatings } from "../../../data/mockData";
+import { api } from "../../../services/Api";
 
-export function AdminStats() {
-    const totalProviders = mockProviders.length;
-    const activeProviders = mockProviders.filter(p => p.active).length;
-    const totalServices = mockServices.length;
-    const activeServices = mockServices.filter(s => s.active).length;
+interface StatsSectionProps {
+    setAlertMessage: (msg: string) => void;
+    setShowAlert: (show: boolean) => void;
+    setAlertType: React.Dispatch<React.SetStateAction<'success' | 'error'>>;
+}
+
+interface Providers {
+    idProvider: number;
+    addressId: number;
+    name: string;
+    cnpj: string;
+    phone: string;
+    email: string;
+    password: string;
+    photoUrl?: string;
+    biography?: string;
+    status: string;
+    linkedin?: string;
+    instagram?: string;
+    validatedEmail?: string;
+    emailValidationToken?: string;
+    savedLogin?: string;
+}
+
+interface Service {
+    idService: number;
+    name: string;
+    categoryId: number;
+    status: string;
+}
+
+export function AdminStats({ setAlertMessage, setShowAlert, setAlertType }: StatsSectionProps) {
+    const [providers, setProviders] = useState<Providers[]>([]);
+    const [services, setServices] = useState<Service [] >([]);
+
+    const getProviders = async () => {
+        await api.get("providers")
+        .then((response) => {
+            setProviders(response.data);
+        })
+        .catch((error) => {
+            setAlertMessage("Erro ao buscar prestadores!");
+            setAlertType("error");
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+            console.log(error);
+        })
+    }
+
+    const getServices = () => {
+        api.get("/services")
+        .then((response) => {
+            setServices(response.data);
+        })
+        .catch ((error) => { 
+            setAlertMessage('Erro ao buscar serviço!');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+        })
+    }
+
+    useEffect(() => {
+        getProviders();
+        getServices();
+    }, []);
+
+    const totalProviders = providers.length;
+    const activeProviders = providers.filter(providers => providers.status === "ACTIVE").length;
+    const totalServices = services.length;
+    const activeServices = services.filter(services => services.status === "ACTIVE").length;
     const totalRatings = mockRatings.length;
     const visibleRatings = mockRatings.filter(r => r.visible).length;
 
