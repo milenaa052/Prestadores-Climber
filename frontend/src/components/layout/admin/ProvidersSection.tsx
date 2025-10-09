@@ -13,8 +13,9 @@ interface ProvidersSectionProps {
 
 interface Providers {
     idProvider: number;
+    addressId: number;
     name: string;
-    cnpjProvider: string;
+    cnpj: string;
     phone: string;
     email: string;
     password: string;
@@ -23,9 +24,9 @@ interface Providers {
     status: string;
     linkedin?: string;
     instagram?: string;
-    validatedEmail?: boolean;
+    validatedEmail?: string;
     emailValidationToken?: string;
-    savedLogin?: boolean;
+    savedLogin?: string;
 }
 
 export function ProvidersSection({ setAlertMessage, setShowAlert, setAlertType }: ProvidersSectionProps) {
@@ -49,10 +50,39 @@ export function ProvidersSection({ setAlertMessage, setShowAlert, setAlertType }
         getProviders();
     }, [])
     
-    const toggleProviderStatus = (idProvider: number, status: boolean) => {
-        setAlertMessage(`Prestador ${status ? 'ativado' : 'desativado'} com sucesso!`);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+    const toggleProviderStatus = async (provider: Providers) => {
+        try {
+            const newStatus = provider.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+            const payload = {
+                addressId: provider.addressId,
+                name: provider.name,
+                cnpjProvider: provider.cnpj,
+                phone: provider.phone,
+                email: provider.email,
+                status: newStatus,
+                photUrl: provider.photoUrl || '',
+                biography: provider.biography || '',
+                linkedin: provider.linkedin || '',
+                instagram: provider.instagram || '',
+                validatedEmail: provider.validatedEmail || '',
+                emailValidationToken: provider.emailValidationToken || '',
+                savedLogin: provider.savedLogin || ''
+            };
+
+            await api.put(`/provider/${provider.idProvider}`, payload);
+
+            setAlertMessage(`Prestador ${provider.status === "INACTIVE" ? 'ativado' : 'desativado'} com sucesso!`);
+            setAlertType('success');
+            setShowAlert(true);
+            getProviders();
+            setTimeout(() => setShowAlert(false), 3000);
+        } catch (error) {
+            setAlertMessage('Erro ao atualizar status do prestador!');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+            console.log(error)
+        }
     };
 
     return (
@@ -75,8 +105,8 @@ export function ProvidersSection({ setAlertMessage, setShowAlert, setAlertType }
                                     <p className="text-sm text-gray-600">{provider.email}</p>
 
                                     <div className="flex items-center space-x-2 mt-2">
-                                        <Badge className={provider.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                                            {provider.status ? 'Ativo' : 'Inativo'}
+                                        <Badge className={provider.status === "ACTIVE" ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                                            {provider.status === "ACTIVE" ? 'Ativo' : 'Inativo'}
                                         </Badge>
 
                                         <Badge className={provider.savedLogin ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}>
@@ -88,11 +118,11 @@ export function ProvidersSection({ setAlertMessage, setShowAlert, setAlertType }
                                 <div className="flex items-center space-x-2">
                                     <Button
                                         size="sm"
-                                        variant={provider.status ? "destructive" : "default"}
-                                        onClick={() => toggleProviderStatus(provider.idProvider, !provider.status)}
+                                        variant={provider.status === "ACTIVE" ? "destructive" : "default"}
+                                        onClick={() => toggleProviderStatus(provider)}
                                         className="cursor-pointer"
                                     >
-                                        {provider.status ? (
+                                        {provider.status === "ACTIVE" ? (
                                             <>
                                                 <UserX className="h-4 w-4 mr-1" />
                                                 Desativar
