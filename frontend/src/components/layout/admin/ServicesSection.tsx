@@ -207,7 +207,7 @@ export function ServicesSection({ setShowAlert, setAlertMessage, setAlertType }:
                             </div>
                         ))   
                         ) : (
-                            <p className="text-sm text-gray-500">Nenhum serviço cadastrado.</p>
+                            <p className="text-s text-gray-500">Nenhum serviço cadastrado.</p>
                         )}
                     </div>
                 </CardContent>

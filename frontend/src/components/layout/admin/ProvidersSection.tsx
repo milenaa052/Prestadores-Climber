@@ -109,7 +109,7 @@ export function ProvidersSection({ setAlertMessage, setShowAlert, setAlertType }
                         ))
                     ): (
                         <div>
-                            <p>Nenhum prestador cadastrado</p>
+                            <p className="text-s text-gray-500">Nenhum prestador cadastrado</p>
                         </div>
                     )}
                 </div>

@@ -211,7 +211,7 @@ export function CategoriesSection({ setShowAlert, setAlertMessage, setAlertType 
                                 ))
                             ) : (
                                 <div>
-                                    <p>Nenhuma categoria cadastrada</p>
+                                    <p className="text-s text-gray-500">Nenhuma categoria cadastrada</p>
                                 </div>
                             )}
                         </div>
