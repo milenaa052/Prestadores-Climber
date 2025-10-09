@@ -10,6 +10,7 @@ import { ProviderDashboard } from './pages/dashboard/ProviderDashboard';
 import { ClientDashboard } from './pages/dashboard/ClientDashboard';
 import { AdminDashboard } from './pages/dashboard/AdminDashboard';
 import { Toaster } from './components/ui/sonner';
+import { Button } from "./components/ui/button";
 
 function AppContent() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -32,31 +33,53 @@ function AppContent() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginForm />} />
-          <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" /> : <RegisterForm />} />
+          <Route 
+            path="/login" 
+            element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginForm />} 
+          />
+          <Route 
+            path="/register" 
+            element={isAuthenticated ? <Navigate to="/dashboard" /> : <RegisterForm />} 
+          />
 
-          {/* Private Routes */}
+          {/* Private Routes - Redirecionamento baseado no role */}
           <Route
             path="/dashboard"
             element={
-              !isAuthenticated ? ( <Navigate to="/login" />) 
-              : user?.type === "provider" ? ( <ProviderDashboard /> ) 
-              : user?.type === "client" ? ( <ClientDashboard />) 
-              : user?.type === "admin" ? ( <AdminDashboard /> ) 
-              : ( <div>Tipo de usuário inválido</div> )
+              !isAuthenticated ? (
+                <Navigate to="/login" />
+              ) : user?.role === "provider" ? (
+                <ProviderDashboard />
+              ) : user?.role === "contractor" ? (
+                <ClientDashboard />
+              ) : user?.role === "admin" ? (
+                <AdminDashboard />
+              ) : (
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <p className="text-lg text-red-600">Tipo de usuário inválido</p>
+                    <Button onClick={() => useAuth().logout()} className="mt-4">
+                      Sair
+                    </Button>
+                  </div>
+                </div>
+              )
             }
           />
 
-          {/* Services and providers (for customers only) */}
+          {/* Services and providers (for contractors only) */}
           <Route
             path="/services"
-            element={user?.type === "client" ? <ServiceSelection /> : <Navigate to="/dashboard" />}
+            element={user?.role === "contractor" ? <ServiceSelection /> : <Navigate to="/dashboard" />}
           />
           
           <Route
             path="/providers/:serviceId"
-            element={user?.type === "client" ? <ProviderList /> : <Navigate to="/dashboard" />}
+            element={user?.role === "contractor" ? <ProviderList /> : <Navigate to="/dashboard" />}
           />
+
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
       <Toaster />

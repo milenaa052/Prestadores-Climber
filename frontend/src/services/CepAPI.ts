@@ -1,8 +1,9 @@
 export interface AddressData {
-  street: string;
-  city: string;
-  uf: string;
-  complement: string;
+    street: string;
+    uf: string;
+    city: string;
+    neighborhood: string;
+    complement: string;
 }
 
 export async function getAddressByCep(cep: string): Promise<AddressData | null> {
@@ -18,8 +19,9 @@ export async function getAddressByCep(cep: string): Promise<AddressData | null> 
 
         return {
             street: data.logradouro || '',
-            city: data.localidade || '',
             uf: data.uf || '',
+            city: data.localidade || '',
+            neighborhood: data.bairro || '',
             complement: data.complemento || '',
         };
     } catch (error) {

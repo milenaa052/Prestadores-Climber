@@ -1,10 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, Provider, Client } from '../types';
+import { api } from '../services/Api';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'contractor' | 'provider';
+  token: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -12,91 +19,84 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'João Silva',
-    email: 'joao@provider.com',
-    type: 'provider',
-    active: true,
-    createdAt: '2024-01-01',
-  },
-  {
-    id: '2',
-    name: 'Maria Santos',
-    email: 'maria@client.com',
-    type: 'client',
-    active: true,
-    createdAt: '2024-01-01',
-  },
-  {
-    id: '3',
-    name: 'Admin',
-    email: 'admin@climber.com',
-    type: 'admin',
-    active: true,
-    createdAt: '2024-01-01',
-  },
-];
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('climber_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const token = localStorage.getItem('climber_token');
+    
+    if (savedUser && token) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+        validateToken();
+      } catch (error) {
+        console.error('Erro ao carregar usuário salvo:');
+        localStorage.removeItem('climber_user');
+        localStorage.removeItem('climber_token');
+      }
     }
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
-    
-    const foundUser = mockUsers.find(u => u.email === email);
-    if (foundUser && foundUser.active) {
-      setUser(foundUser);
-      localStorage.setItem('climber_user', JSON.stringify(foundUser));
-      setIsLoading(false);
-      return true;
+  const validateToken = async () => {
+    try {
+      await api.get('/user');
+    } catch (error) {
+      console.error('Falha na validação do token');
+      logout();
     }
-    
-    setIsLoading(false);
-    return false;
   };
 
-  const register = async (userData: Omit<User, 'id' | 'createdAt'>): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     
-    const existingUser = mockUsers.find(u => u.email === userData.email);
-    if (existingUser) {
+    try {
+      const response = await api.post('/login', { email, password });
+
+      const { id, name, email: userEmail, role, token } = response.data;
+      
+      const userData: User = {
+        id,
+        name,
+        email: userEmail,
+        role,
+        token
+      };
+
+      setUser(userData);
+      localStorage.setItem('climber_user', JSON.stringify(userData));
+      localStorage.setItem('climber_token', token);
+      
+    } catch (error: unknown) {
+      console.error('Login error:', error);
+      
+      let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
+      
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const apiError = error as { response?: { data?: { error?: string } } };
+        if (apiError.response?.data?.error) {
+          errorMessage = apiError.response.data.error;
+        }
+      }
+      
+      throw new Error(errorMessage);
+    } finally {
       setIsLoading(false);
-      return false;
     }
-
-    const newUser: User = {
-      ...userData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-
-    mockUsers.push(newUser);
-    //setUser(newUser);
-    //localStorage.setItem('climber_user', JSON.stringify(newUser));
-    setIsLoading(false);
-    return true;
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('climber_user');
+    localStorage.removeItem('climber_token');
   };
 
   const value: AuthContextType = {
     user,
     login,
-    register,
     logout,
     isAuthenticated: !!user,
     isLoading,

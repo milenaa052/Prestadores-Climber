@@ -961,6 +961,10 @@
     border-color: var(--color-gray-200);
   }
 
+  .border-green-500 {
+    border-color: var(--color-green-500);
+  }
+
   .border-gray-300 {
     border-color: var(--color-gray-300);
   }

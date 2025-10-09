@@ -69,9 +69,10 @@ export interface RegisterFormData {
   phone: string;
   password: string;
   cep: string;
+  uf: string;
+  city: string;
+  neighborhood: string;
   street: string;
   number: string;
-  city: string;
-  uf: string;
   complement: string;
 }

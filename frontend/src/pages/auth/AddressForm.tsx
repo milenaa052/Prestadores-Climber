@@ -41,8 +41,9 @@ export const AddressForm: React.FC<AddressFormProps> = ({
                 setFormData(prev => ({
                     ...prev,
                     street: address.street,
-                    city: address.city,
                     uf: address.uf,
+                    city: address.city,
+                    neighborhood: address.neighborhood,
                     complement: address.complement,
                 }));
 
@@ -76,6 +77,42 @@ export const AddressForm: React.FC<AddressFormProps> = ({
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="uf">UF</Label>
+        <Input 
+            id="uf" 
+            type="text" 
+            value={formData.uf} 
+            onChange={handleChange} 
+            required 
+            placeholder="UF" 
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="city">Cidade</Label>
+        <Input 
+            id="city" 
+            type="text" 
+            value={formData.city} 
+            onChange={handleChange} 
+            required 
+            placeholder="Cidade"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="neighborhood">Bairro</Label>
+        <Input 
+            id="neighborhood" 
+            type="text" 
+            value={formData.neighborhood} 
+            onChange={handleChange} 
+            required 
+            placeholder="Bairro" 
+        />
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="street">Rua</Label>
         <Input 
             id="street" 
@@ -100,30 +137,6 @@ export const AddressForm: React.FC<AddressFormProps> = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="city">Cidade</Label>
-        <Input 
-            id="city" 
-            type="text" 
-            value={formData.city} 
-            onChange={handleChange} 
-            required 
-            placeholder="Cidade"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="uf">UF</Label>
-        <Input 
-            id="uf" 
-            type="text" 
-            value={formData.uf} 
-            onChange={handleChange} 
-            required 
-            placeholder="UF" 
-        />
-      </div>
-
-      <div className="space-y-2">
         <Label htmlFor="complement">Complemento</Label>
         <Input 
             id="complement" 
@@ -135,8 +148,9 @@ export const AddressForm: React.FC<AddressFormProps> = ({
       </div>
 
       <div className="flex justify-between">
-        <Button type="button" variant="outline" onClick={onBack}>Voltar</Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="button" variant="outline" className="cursor-pointer" onClick={onBack}>Voltar</Button>
+
+        <Button type="submit" disabled={isLoading} className="cursor-pointer">
           {isLoading ? 'Criando conta...' : 'Criar Conta'}
         </Button>
       </div>

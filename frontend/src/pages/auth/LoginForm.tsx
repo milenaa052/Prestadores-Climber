@@ -12,23 +12,28 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
-    const success = await login(email, password);
-    
-    if (success) {
-      navigate("/dashboard");
-    } else {
-      setError('Email ou senha inválidos');
+    try {
+      await login(email, password);
+
+      setSuccess('Login realizado com sucesso!');
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+      
+    } catch (error) {
+      setError("Erro ao fazer login");
+      setTimeout(() => setError(""), 3000);
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -42,6 +47,12 @@ export function LoginForm() {
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert variant="success" className='mb-4'>
+                <AlertDescription>{success}</AlertDescription>
               </Alert>
             )}
             
@@ -88,16 +99,6 @@ export function LoginForm() {
                 Cadastre-se
               </button>
             </p>
-          </div>
-
-          <div className="mt-4 p-4 bg-gray-50 rounded-md">
-            <p className="text-xs text-gray-600 mb-2">Contas de teste:</p>
-            <div className="text-xs space-y-1">
-              <p><strong>Prestador:</strong> joao@provider.com</p>
-              <p><strong>Cliente:</strong> maria@client.com</p>
-              <p><strong>Admin:</strong> admin@climber.com</p>
-              <p className="text-gray-500">Senha: qualquer</p>
-            </div>
           </div>
         </CardContent>
       </Card>
